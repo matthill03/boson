@@ -5,7 +5,7 @@
 #include <string>
 #include <iostream>
 
-namespace neptune {
+namespace boson {
 typedef struct WindowConfig {
     int width;
     int height;

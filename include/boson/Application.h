@@ -3,7 +3,7 @@
 
 #include <memory>
 
-namespace neptune {
+namespace boson {
 class Application {
 public:
     Application(const WindowConfig_t& window_config);

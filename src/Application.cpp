@@ -1,6 +1,6 @@
 #include "boson/Application.h"
 
-namespace neptune {
+namespace boson {
 Application::Application(const WindowConfig_t& window_config) {
     m_window = std::make_unique<Window>(window_config);
 }

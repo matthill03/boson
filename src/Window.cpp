@@ -1,6 +1,6 @@
 #include "boson/Window.h"
 
-namespace neptune {
+namespace boson {
 
 Window::Window(const WindowConfig_t& config) {
     m_width = config.width;
