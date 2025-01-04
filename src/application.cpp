@@ -21,12 +21,13 @@ void Application::run() {
 
     /*Object square_two({*/
     /*    ObjectType::SQUARE,*/
-    /*    {0.0f, 0.0f, 0.0f},*/
+    /*    {-0.5f, 1.0f, 0.0f},*/
     /*    {1.0f, 1.0f, 1.0f},*/
     /*    {1.0f, 1.0f, 1.0f}*/
     /*});*/
 
     square_renderer.add_obj(square);
+    //square_renderer.add_obj(square_two);
 
     while (!glfwWindowShouldClose(m_window->get_handle()))
     {
