@@ -40,7 +40,6 @@ void Renderer::draw() {
         vertex_array.second->bind();
 
         for (const auto& obj : m_obj_data.at(vertex_array.second->get_id())) {
-            std::cout << glm::to_string(obj) << "\n";
             m_shader->set_mat4("transform", obj);
 
            glDrawElements(GL_TRIANGLES, vertex_array.second->index_count(), GL_UNSIGNED_INT, 0);
