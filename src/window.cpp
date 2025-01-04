@@ -2,6 +2,10 @@
 
 namespace boson {
 
+static void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
 Window::Window(const WindowConfig_t& config) : m_width(config.width), m_height(config.height), m_title(config.title) {
 
     glfwInit();
@@ -21,12 +25,10 @@ Window::Window(const WindowConfig_t& config) : m_width(config.width), m_height(c
         exit(1);
     }
     glfwMakeContextCurrent(m_handle);
-    //glfwSetFramebufferSizeCallback(m_handle, framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(m_handle, framebuffer_size_callback);
 
     glewExperimental = GL_TRUE;
     glewInit();
-
-    glViewport(0, 0, m_width, m_height);
 
 }
 

@@ -5,13 +5,14 @@
 namespace boson {
 
 enum class ObjectType {
-    SQUARE,
+    CUBE,
 };
 
 typedef struct {
     ObjectType type;
     glm::vec3 position;
     glm::vec3 size;
+    glm::vec3 rotation;
     glm::vec3 colour;
 } ObjectInfo;
 

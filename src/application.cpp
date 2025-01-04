@@ -9,33 +9,38 @@ Application::~Application() {
 }
 
 void Application::run() {
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+
     Shader shader = Shader("../shaders/vertex.glsl", "../shaders/fragment.glsl");
 
-    Renderer square_renderer(shader);
+    Renderer renderer(shader);
     Object square({
-        ObjectType::SQUARE,
+        ObjectType::CUBE,
         {0.0f, 0.0f, 0.0f},
         {1.0f, 1.0f, 1.0f},
+        {0.0f, 0.0f, 0.0f},
         {1.0f, 1.0f, 1.0f}
     });
 
     /*Object square_two({*/
-    /*    ObjectType::SQUARE,*/
+    /*    ObjectType::CUBE,*/
     /*    {-0.5f, 1.0f, 0.0f},*/
     /*    {1.0f, 1.0f, 1.0f},*/
     /*    {1.0f, 1.0f, 1.0f}*/
     /*});*/
 
-    square_renderer.add_obj(square);
-    //square_renderer.add_obj(square_two);
+    renderer.add_obj(square);
+    /*renderer.add_obj(square_two);*/
 
     while (!glfwWindowShouldClose(m_window->get_handle()))
     {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shader.use();
-        square_renderer.draw();
+        renderer.draw();
 
         glfwSwapBuffers(m_window->get_handle());
         glfwPollEvents();
