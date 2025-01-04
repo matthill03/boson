@@ -1,7 +1,9 @@
 #pragma once
-#include "boson/Window.h"
-
 #include <memory>
+
+#include "boson/window.h"
+#include "boson/vertex_array.h"
+#include "boson/shader.h"
 
 namespace boson {
 class Application {

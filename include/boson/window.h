@@ -19,6 +19,9 @@ public:
     ~Window();
 
     GLFWwindow* get_handle() const { return m_handle; }
+    int get_width() const { return m_width; }
+    int get_height() const { return m_height; }
+    std::string get_title() const { return m_title; }
 
 private:
     GLFWwindow* m_handle;

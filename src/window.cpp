@@ -1,11 +1,8 @@
-#include "boson/Window.h"
+#include "boson/window.h"
 
 namespace boson {
 
-Window::Window(const WindowConfig_t& config) {
-    m_width = config.width;
-    m_height = config.height;
-    m_title = config.title;
+Window::Window(const WindowConfig_t& config) : m_width(config.width), m_height(config.height), m_title(config.title) {
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
