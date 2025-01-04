@@ -1,5 +1,6 @@
 #pragma once
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -20,6 +21,7 @@ public:
     ~Shader();
 
     void use() const { glUseProgram(m_id); }
+    void set_mat4(const std::string& name, const glm::mat4& mat) const { glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, &mat[0][0]); };
 
 private:
     GLuint m_id;

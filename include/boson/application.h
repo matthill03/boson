@@ -4,6 +4,7 @@
 #include "boson/window.h"
 #include "boson/vertex_array.h"
 #include "boson/shader.h"
+#include "boson/renderer.h"
 
 namespace boson {
 class Application {

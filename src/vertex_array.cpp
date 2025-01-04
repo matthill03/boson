@@ -2,7 +2,7 @@
 
 namespace boson {
 
-VertexArray::VertexArray(const std::vector<GLfloat>& vertices, const std::vector<GLuint>& indices) {
+VertexArray::VertexArray(const std::vector<GLfloat>& vertices, const std::vector<GLuint>& indices) : m_index_count(indices.size()) {
     glGenVertexArrays(1, &m_id);
     glGenBuffers(1, &m_vbo);
     glGenBuffers(1, &m_ebo);
