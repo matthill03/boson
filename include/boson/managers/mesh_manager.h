@@ -1,5 +1,8 @@
 #pragma once
 #include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <glm/trigonometric.hpp>
+#include <glm/ext/scalar_constants.hpp>
 
 #include <unordered_map>
 #include <string>
@@ -15,6 +18,9 @@ public:
     ~MeshManager();
 
     std::string load_cube_mesh();
+    std::string load_plane_mesh();
+    std::string load_sphere_mesh(GLint sector_count, GLint stack_count, GLfloat radius, const std::string& name);
+    std::string load_cylinder_mesh(GLint sector_count, GLfloat radius, GLfloat height, const std::string& name);
     std::shared_ptr<Mesh> load_model_mesh(const std::string& file_path);
     std::shared_ptr<Mesh> get_mesh(const std::string& name);
 
@@ -25,46 +31,59 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Mesh>> m_mesh_map = {};
 
     GLuint m_next_mesh_id = 0;
-    std::vector<GLfloat> square_vertices = {
-        // Front face
-        // Position                // Normal              // Texture Coord
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,    0.0f, 0.0f,  // Bottom-left  // 0
-         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,    1.0f, 0.0f,  // Bottom-right // 1
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,    1.0f, 1.0f,  // Top-right    // 2
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,    0.0f, 1.0f,  // Top-left     // 3
 
-        // Back face
-         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,    0.0f, 0.0f,  // Bottom-right // 4
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,    0.0f, 1.0f,  // Top-right    // 5
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,    1.0f, 1.0f,  // Top-left     // 6
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,    1.0f, 0.0f,  // Bottom-left  // 7
-
-        // Left face
-        -0.5f, -0.5f, -0.5f,  -1.0f,  0.0f,  0.0f,   1.0f, 0.0f,  // Bottom-front // 8
-        -0.5f,  0.5f, -0.5f,  -1.0f,  0.0f,  0.0f,   1.0f, 1.0f,  // Top-front    // 9
-        -0.5f,  0.5f,  0.5f,  -1.0f,  0.0f,  0.0f,   0.0f, 1.0f,  // Top-back     // 10
-        -0.5f, -0.5f,  0.5f,  -1.0f,  0.0f,  0.0f,   0.0f, 0.0f,  // Bottom-back  // 11
-
-        // Right face
-         0.5f, -0.5f,  0.5f,   1.0f,  0.0f,  0.0f,   1.0f, 0.0f,  // Bottom-back  // 12
-         0.5f,  0.5f,  0.5f,   1.0f,  0.0f,  0.0f,   1.0f, 1.0f,  // Top-back     // 13
-         0.5f,  0.5f, -0.5f,   1.0f,  0.0f,  0.0f,   0.0f, 1.0f,  // Top-front    // 14
-         0.5f, -0.5f, -0.5f,   1.0f,  0.0f,  0.0f,   0.0f, 0.0f,  // Bottom-front // 15
-
-        // Top face
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,    0.0f, 0.0f,  // Front-left   // 16
-         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,    1.0f, 0.0f,  // Front-right  // 17
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,    1.0f, 1.0f,  // Back-right   // 18
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,    0.0f, 1.0f,  // Back-left    // 19
-
-        // Bottom face
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,    0.0f, 0.0f,  // Back-left    // 20
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,    1.0f, 0.0f,  // Back-right   // 21
-         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,    1.0f, 1.0f,  // Front-right  // 22
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,    0.0f, 1.0f   // Front-left   // 23
+    std::vector<Vertex> plane_vertices = {
+        {{-0.5f, 0.0f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}}, // Front left
+        {{ 0.5f, 0.0f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}}, // Front right
+        {{ 0.5f, 0.0f,  0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}}, // Back right
+        {{-0.5f, 0.0f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}}, // Back left
     };
 
-    std::vector<GLuint> square_indices = {
+    std::vector<GLuint> plane_indicies = {
+        2, 3, 0,
+        0, 1, 2
+    };
+
+    std::vector<Vertex> cube_vertices = {
+        // Front face
+        // Position                // Normal              // Texture Coord
+        {{-0.5f, -0.5f, -0.5f}, {0.0f,  0.0f, -1.0f},  {0.0f, 0.0f}},  // Bottom-left  // 0
+        {{ 0.5f, -0.5f, -0.5f}, {0.0f,  0.0f, -1.0f},  {1.0f, 0.0f}},  // Bottom-right // 1
+        {{ 0.5f,  0.5f, -0.5f}, {0.0f,  0.0f, -1.0f},  {1.0f, 1.0f}},  // Top-right    // 2
+        {{-0.5f,  0.5f, -0.5f}, {0.0f,  0.0f, -1.0f},  {0.0f, 1.0f}},  // Top-left     // 3
+
+        // Back face
+        {{ 0.5f, -0.5f,  0.5f}, {0.0f,  0.0f,  1.0f},  {0.0f, 0.0f}},  // Bottom-right // 4
+        {{ 0.5f,  0.5f,  0.5f}, {0.0f,  0.0f,  1.0f},  {0.0f, 1.0f}},  // Top-right    // 5
+        {{-0.5f,  0.5f,  0.5f}, {0.0f,  0.0f,  1.0f},  {1.0f, 1.0f}},  // Top-left     // 6
+        {{-0.5f, -0.5f,  0.5f}, {0.0f,  0.0f,  1.0f},  {1.0f, 0.0f}},  // Bottom-left  // 7
+
+        // Left face
+        {{-0.5f, -0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}, {1.0f, 0.0f}},  // Bottom-front // 8
+        {{-0.5f,  0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}, {1.0f, 1.0f}},  // Top-front    // 9
+        {{-0.5f,  0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}, {0.0f, 1.0f}},  // Top-back     // 10
+        {{-0.5f, -0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}, {0.0f, 0.0f}},  // Bottom-back  // 11
+
+        // Right face
+        {{ 0.5f, -0.5f,  0.5f},  {1.0f,  0.0f,  0.0f}, {1.0f, 0.0f}},  // Bottom-back  // 12
+        {{ 0.5f,  0.5f,  0.5f},  {1.0f,  0.0f,  0.0f}, {1.0f, 1.0f}},  // Top-back     // 13
+        {{ 0.5f,  0.5f, -0.5f},  {1.0f,  0.0f,  0.0f}, {0.0f, 1.0f}},  // Top-front    // 14
+        {{ 0.5f, -0.5f, -0.5f},  {1.0f,  0.0f,  0.0f}, {0.0f, 0.0f}},  // Bottom-front // 15
+
+        // Top face
+        {{-0.5f,  0.5f, -0.5f}, {0.0f,  1.0f,  0.0f},  {0.0f, 0.0f}},  // Front-left   // 16
+        {{ 0.5f,  0.5f, -0.5f}, {0.0f,  1.0f,  0.0f},  {1.0f, 0.0f}},  // Front-right  // 17
+        {{ 0.5f,  0.5f,  0.5f}, {0.0f,  1.0f,  0.0f},  {1.0f, 1.0f}},  // Back-right   // 18
+        {{-0.5f,  0.5f,  0.5f}, {0.0f,  1.0f,  0.0f},  {0.0f, 1.0f}},  // Back-left    // 19
+
+        // Bottom face
+        {{-0.5f, -0.5f,  0.5f}, {0.0f, -1.0f,  0.0f},  {0.0f, 0.0f}},  // Back-left    // 20
+        {{ 0.5f, -0.5f,  0.5f}, {0.0f, -1.0f,  0.0f},  {1.0f, 0.0f}},  // Back-right   // 21
+        {{ 0.5f, -0.5f, -0.5f}, {0.0f, -1.0f,  0.0f},  {1.0f, 1.0f}},  // Front-right  // 22
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, -1.0f,  0.0f},  {0.0f, 1.0f}}   // Front-left   // 23
+    };
+
+    std::vector<GLuint> cube_indices = {
         // Front face
         0, 1, 2,
         2, 3, 0,

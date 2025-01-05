@@ -9,13 +9,20 @@ namespace boson {
 
 class Mesh {
 public:
-    Mesh(const std::string& name, const std::vector<GLfloat>& vertices, const std::vector<GLuint>& indices, GLuint next_mesh_id);
+    Mesh(const std::string& name, const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices, GLuint next_mesh_id);
+    Mesh(const std::string& name, GLuint next_mesh_id);
     ~Mesh();
 
     void bind_data() const { m_data->bind(); }
 
+    void push_vertex(const Vertex vertex);
+    void push_index(const GLuint index);
+
+    void send_data();
+
     GLuint get_id() const { return m_id; }
     GLuint get_index_count() const { return m_data->index_count(); }
+    GLuint get_vertex_count() const { return m_data->vertex_count(); }
     std::string get_name() const { return m_name; }
 
 private:

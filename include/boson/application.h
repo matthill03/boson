@@ -17,7 +17,10 @@ public:
     ~Application();
 
     void run();
-    void add_obj(const ObjectInfo& obj_info);
+    void add_cube(const CubeInfo& info);
+    void add_plane(const PlaneInfo& info);
+    void add_sphere(const SphereInfo& info);
+    void add_cylinder(const CylinderInfo& info);
 
 private:
     std::unique_ptr<Window> m_window = nullptr;

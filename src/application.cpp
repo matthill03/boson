@@ -10,43 +10,67 @@ Application::Application(const WindowConfig_t& window_config) {
 Application::~Application() {
 }
 
-void Application::add_obj(const ObjectInfo& obj_info) {
-    switch (obj_info.type) {
-        case ObjectType::CUBE: {
-            std::shared_ptr<Mesh> mesh = m_mesh_manager->get_mesh("cube");
+void Application::add_cube(const CubeInfo& info) {
+    std::shared_ptr<Mesh> mesh = m_mesh_manager->get_mesh("cube");
 
-            if (mesh == nullptr) {
-                // Item does not exists
-                std::string new_mesh = m_mesh_manager->load_cube_mesh();;
+    if (mesh == nullptr) {
+        // Item does not exists
+        std::string new_mesh = m_mesh_manager->load_cube_mesh();;
 
-                m_obj_data.insert({new_mesh, { Object(obj_info) }});
-                break;
-            }
-
-            m_obj_data.at("cube").push_back(Object(obj_info));
-            break;
-        }
-        /*case ObjectType::MODEL: {*/
-        /*    auto item = m_mesh_data.find(static_cast<GLuint>(obj_info.type));*/
-        /**/
-        /*    if (item == m_mesh_data.end()) {*/
-        /*        // Item does not exists*/
-        /*        std::unique_ptr<Mesh> new_mesh = std::make_unique<Mesh>("name", square_vertices, square_indices, m_next_mesh_id);*/
-        /*        m_next_mesh_id++;*/
-        /**/
-        /*        GLuint new_id = new_mesh->get_id();*/
-        /**/
-        /*        m_mesh_data.insert({new_id, std::move(new_mesh)});*/
-        /*        m_obj_data.insert({new_id, { Object(obj_info) }});*/
-        /*        break;*/
-        /*    }*/
-        /**/
-        /*    GLuint map_index = item->second.get()->get_id();*/
-        /*    m_obj_data.at(map_index).push_back(Object(obj_info));*/
-        /*    break;*/
-        /*}*/
-        default: exit(EXIT_FAILURE);
+        m_obj_data.insert({new_mesh, { Object({info.position, info.size, info.rotation, info.material}) }});
+        return;
     }
+
+    m_obj_data.at("cube").push_back(Object({info.position, info.size, info.rotation, info.material}));
+}
+
+void Application::add_plane(const PlaneInfo& info) {
+    std::shared_ptr<Mesh> mesh = m_mesh_manager->get_mesh("plane");
+
+    if (mesh == nullptr) {
+        // Item does not exists
+        std::string new_mesh = m_mesh_manager->load_plane_mesh();;
+
+        m_obj_data.insert({new_mesh, { Object({info.position, glm::vec3(info.size.x, 1.0f, info.size.y), info.rotation, info.material}) }});
+        return;
+    }
+
+    m_obj_data.at("plane").push_back(Object({info.position, glm::vec3(info.size.x, 1.0f, info.size.y), info.rotation, info.material}));
+}
+
+void Application::add_sphere(const SphereInfo& info) {
+    std::string sphere_name = "sphere_" + std::to_string(info.sector_count) + "_" + std::to_string(info.stack_count) + "_" + std::to_string(static_cast<GLint>(info.radius));
+
+    std::shared_ptr<Mesh> mesh = m_mesh_manager->get_mesh(sphere_name);
+
+    if (mesh == nullptr) {
+        // Item does not exists
+        std::string new_mesh = m_mesh_manager->load_sphere_mesh(info.sector_count, info.stack_count, info.radius, sphere_name);
+
+        m_obj_data.insert({new_mesh, { Object({info.position, glm::vec3(1.0f), info.rotation, info.material}) }});
+        std::cout << sphere_name << "\n";
+        return;
+    }
+
+    m_obj_data.at(sphere_name).push_back(Object({info.position, glm::vec3(1.0f), info.rotation, info.material}));
+
+}
+
+void Application::add_cylinder(const CylinderInfo& info) {
+    std::string cylinder_name = "cylinder_" + std::to_string(info.sector_count) + "_" + std::to_string(static_cast<GLint>(info.radius)) + "_" + std::to_string(static_cast<GLint>(info.height));
+
+    std::shared_ptr<Mesh> mesh = m_mesh_manager->get_mesh(cylinder_name);
+
+    if (mesh == nullptr) {
+        // Item does not exists
+        std::string new_mesh = m_mesh_manager->load_cylinder_mesh(info.sector_count, info.radius, info.height, cylinder_name);
+
+        m_obj_data.insert({new_mesh, { Object({info.position, glm::vec3(1.0f), info.rotation, info.material}) }});
+        std::cout << cylinder_name << "\n";
+        return;
+    }
+
+    m_obj_data.at(cylinder_name).push_back(Object({info.position, glm::vec3(1.0f), info.rotation, info.material}));
 }
 
 void Application::run() {
@@ -69,43 +93,66 @@ void Application::run() {
         {0.1f, 0.2f, 0.1},
         {0.6f, 0.9f, 0.6f},
         {0.2f, 0.7f, 0.2f},
-        128.0f
+        10.0f
 
     };
 
-    add_obj({
-        ObjectType::CUBE,
-        {0.0f, 0.0f, 0.0f},
-        {1.0f, 1.0f, 1.0f},
-        {45.0f, 45.0f, 0.0f},
-        material,
+    add_cube({
+        .position = {0.0f, 0.0f, 0.0f},
+        .size = {1.0f, 1.0f, 1.0f},
+        .rotation = {45.0f, 45.0f, 0.0f},
+        .material = material,
     });
 
-    add_obj({
-        ObjectType::CUBE,
-        {-1.5f, 0.0f, 0.0f},
-        {1.0f, 1.0f, 1.0f},
-        {0.0f, -2.0f, 50.0f},
-        material_two,
+    /*add_sphere({*/
+    /*    .position = {-1.5f, 0.0f, 0.0f},*/
+    /*    .sector_count = 18,*/
+    /*    .stack_count = 9,*/
+    /*    .radius = 1,*/
+    /*    .rotation = {0.0f, -2.0f, 50.0f},*/
+    /*    .material = material_two*/
+    /*});*/
+    /**/
+    /*add_sphere({*/
+    /*    .position = {3.5f, 0.0f, 0.0f},*/
+    /*    .sector_count = 18,*/
+    /*    .stack_count = 9,*/
+    /*    .radius = 1,*/
+    /*    .rotation = {0.0f, -2.0f, 50.0f},*/
+    /*    .material = material_two,*/
+    /*});*/
+    /**/
+    /*add_cube({*/
+    /*    .position = {1.5f, 2.0f, 0.0f},*/
+    /*    .size = {1.0f, 1.0f, 1.0f},*/
+    /*    .rotation = {60.0f, -15.0f, 0.0f},*/
+    /*    .material = material,*/
+    /*});*/
+
+    add_cylinder({
+        .position = {3.5f, 0.0f, 0.0f},
+        .sector_count = 18,
+        .radius = 0.5,
+        .height = 1,
+        .rotation = {42.0f, -23.0f, 0.0f},
+        .material = material_two,
     });
 
-    add_obj({
-        ObjectType::CUBE,
-        {1.5f, 2.0f, 0.0f},
-        {1.0f, 1.0f, 1.0f},
-        {60.0f, -15.0f, 0.0f},
-        material,
+    add_cylinder({
+        .position = {-3.5f, 0.0f, 0.0f},
+        .sector_count = 18,
+        .radius = 0.5,
+        .height = 1,
+        .rotation = {42.0f, -23.0f, 0.0f},
+        .material = material_two,
     });
 
-    add_obj({
-        ObjectType::CUBE,
-        {1.0f, -1.0f, -4.0f},
-        {1.0f, 1.0f, 1.0f},
-        {0.0f, 45.0f, 20.0f},
-        material,
+    add_plane({
+        .position = {1.0f, -10.0f, 0.0f},
+        .size = {100.0f, 200.0f},
+        .rotation = {0.0f, 0.0f, 0.0f},
+        .material = material,
     });
-
-    /*renderer.add_obj(square_two);*/
 
     shader.use();
     shader.set_mat4("projection", m_proj_matrix);

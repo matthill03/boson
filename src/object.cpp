@@ -2,7 +2,7 @@
 
 namespace boson {
 
-Object::Object(const ObjectInfo& info) : m_type(info.type), m_material(info.material) {
+Object::Object(const ObjectInfo& info) : m_material(info.material) {
     m_model_matrix = glm::scale(m_model_matrix, {info.size.x, info.size.y, info.size.z});
 
     m_model_matrix = glm::rotate(m_model_matrix, glm::radians(info.rotation.x), {1.0f, 0.0f, 0.0f});
