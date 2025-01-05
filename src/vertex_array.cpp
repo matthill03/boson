@@ -1,5 +1,4 @@
 #include "boson/vertex_array.h"
-#include "boson/renderer.h"
 
 namespace boson {
 

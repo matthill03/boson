@@ -1,10 +1,14 @@
 #pragma once
+#include <GL/glew.h>
+#include <unordered_map>
 #include <memory>
+#include <vector>
 
 #include "boson/window.h"
-#include "boson/vertex_array.h"
 #include "boson/shader.h"
 #include "boson/renderer.h"
+#include "boson/object.h"
+#include "boson/managers/mesh_manager.h"
 
 namespace boson {
 class Application {
@@ -13,9 +17,17 @@ public:
     ~Application();
 
     void run();
+    void add_obj(const ObjectInfo& obj_info);
 
 private:
     std::unique_ptr<Window> m_window = nullptr;
+    std::unique_ptr<MeshManager> m_mesh_manager = std::make_unique<MeshManager>();
+
+    // Object data per vao
+    std::unordered_map<std::string, std::vector<Object>> m_obj_data = {};
+
+    glm::mat4 m_proj_matrix = {};
+    glm::mat4 m_view_matrix = {};
 
 };
 }
