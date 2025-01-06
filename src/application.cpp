@@ -106,7 +106,7 @@ void Application::run() {
     std::vector<Texture> textures = {diffuse, specular};
 
     add_model({
-        .position = {-2.0f, 0.0f, 0.0f},
+        .position = {1.0f, 0.0f, 0.0f},
         .size = {1.0f, 1.0f, 1.0f},
         .rotation = {0.0f, 45.0f, 0.0f},
         .textures = textures,
@@ -115,7 +115,16 @@ void Application::run() {
     });
 
     add_model({
-        .position = {2.0f, 0.0f, 0.0f},
+        .position = {6.0f, 0.0f, 0.0f},
+        .size = {1.0f, 1.0f, 1.0f},
+        .rotation = {0.0f, 45.0f, 0.0f},
+        .textures = textures,
+        .shininess = 32.0f,
+        .file_path = "../resources/cube.obj",
+    });
+
+    add_model({
+        .position = {-4.0f, 0.0f, 0.0f},
         .size = {1.0f, 1.0f, 1.0f},
         .rotation = {0.0f, 45.0f, 0.0f},
         .textures = textures,

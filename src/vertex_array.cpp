@@ -31,7 +31,7 @@ void VertexArray::push_index(const GLuint index) {
 void VertexArray::push_instance(const glm::mat4& instance, GLuint data_size) {
     bind();
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_instances);
-    glBufferSubData(GL_ARRAY_BUFFER, (data_size - 1) * sizeof(glm::mat4), sizeof(glm::mat4), &instance[0][0]);
+    glBufferSubData(GL_ARRAY_BUFFER, data_size * sizeof(glm::mat4), sizeof(glm::mat4), &instance[0][0]);
     unbind();
 }
 

@@ -66,6 +66,11 @@ void Renderer::render_instanced(const Mesh& mesh) {
             specular_count++;
         }
     }
+    glActiveTexture(GL_TEXTURE0);
+    m_shader->set_int("material.diffuse", 0);
+
+    glActiveTexture(GL_TEXTURE1);
+    m_shader->set_int("material.specular", 1);
 
     m_shader->set_float("material.shininess", mesh.get_shininess());
 
@@ -79,9 +84,7 @@ void Renderer::draw(const Mesh& mesh, const std::vector<Object>& obj_list) {
 
     mesh.bind_data();
 
-    for (const auto& obj : obj_list) {
-        render_instanced(mesh);
-    }
+    render_instanced(mesh);
 }
 
 Renderer::~Renderer() {
