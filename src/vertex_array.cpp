@@ -27,6 +27,7 @@ void VertexArray::set_index_data(const std::vector<GLuint>& indices) {
 void VertexArray::send_data() {
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     if (m_vertices.empty() || m_indices.empty()) {
+        std::cout << "empty\n";
         exit(EXIT_FAILURE);
     }
 

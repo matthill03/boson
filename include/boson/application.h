@@ -17,6 +17,7 @@ public:
     ~Application();
 
     void run();
+    void add_model(const ModelInfo& info);
     void add_cube(const CubeInfo& info);
     void add_plane(const PlaneInfo& info);
     void add_sphere(const SphereInfo& info);

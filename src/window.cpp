@@ -22,7 +22,7 @@ Window::Window(const WindowConfig_t& config) : m_width(config.width), m_height(c
     {
         std::cout << "Failed to create GLFW window\n";
         glfwTerminate();
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     glfwMakeContextCurrent(m_handle);
     glfwSetFramebufferSizeCallback(m_handle, framebuffer_size_callback);

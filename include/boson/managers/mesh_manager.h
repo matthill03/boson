@@ -1,9 +1,18 @@
 #pragma once
 #include <GL/glew.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <assimp/mesh.h>
+#include <assimp/vector3.h>
+#include <assimp/material.h>
+#include <assimp/types.h>
+#include "assimp/matrix4x4.h"
 #include <glm/glm.hpp>
 #include <glm/trigonometric.hpp>
 #include <glm/ext/scalar_constants.hpp>
 
+#include <filesystem>
 #include <unordered_map>
 #include <string>
 #include <memory>
@@ -26,6 +35,8 @@ public:
 
     void unload_mesh(const std::string& name);
     void clear_meshes();
+
+    glm::mat4 convert_matrix(const aiMatrix4x4& mat);
 
 private:
     std::unordered_map<std::string, std::shared_ptr<Mesh>> m_mesh_map = {};
@@ -63,8 +74,7 @@ private:
         {{-0.5f,  0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}, {1.0f, 1.0f}},  // Top-front    // 9
         {{-0.5f,  0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}, {0.0f, 1.0f}},  // Top-back     // 10
         {{-0.5f, -0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}, {0.0f, 0.0f}},  // Bottom-back  // 11
-
-        // Right face
+// Right face
         {{ 0.5f, -0.5f,  0.5f},  {1.0f,  0.0f,  0.0f}, {1.0f, 0.0f}},  // Bottom-back  // 12
         {{ 0.5f,  0.5f,  0.5f},  {1.0f,  0.0f,  0.0f}, {1.0f, 1.0f}},  // Top-back     // 13
         {{ 0.5f,  0.5f, -0.5f},  {1.0f,  0.0f,  0.0f}, {0.0f, 1.0f}},  // Top-front    // 14
@@ -108,6 +118,8 @@ private:
         20, 21, 22,
         22, 23, 20
     };
+
+    std::shared_ptr<Mesh> process_scene_mesh(const aiNode& child, const aiScene& scene, const std::string& model_root_path);
 };
 
 }

@@ -24,6 +24,9 @@ void Mesh::push_index(const GLuint index) {
 void Mesh::send_data() {
     m_data->send_data();
 }
+void Mesh::add_texture(const std::string& file_path, TextureType type) {
+    m_textures.emplace_back(file_path, type);
+}
 
 
 Mesh::~Mesh() {

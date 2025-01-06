@@ -3,12 +3,16 @@
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
+#include <vector>
+#include <optional>
+
+#include "boson/texture.h"
+
 namespace boson {
 
 typedef struct {
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;
+    std::string diffuse;
+    std::string specular;
     GLfloat shininess;
 
 } Material;
@@ -21,12 +25,29 @@ enum class ObjectType {
     MODEL,
 };
 
-typedef struct ObjectInfo {
+typedef struct ObjectInfoMat {
     glm::vec3 position;
     glm::vec3 size;
     glm::vec3 rotation;
     Material material;
-} ObjectInfo;
+} ObjectInfoMat;
+
+typedef struct ObjectInfoTex {
+    glm::vec3 position;
+    glm::vec3 size;
+    glm::vec3 rotation;
+    std::vector<Texture> textures;
+    GLfloat shininess;
+} ObjectInfoTex;
+
+typedef struct ModelInfo {
+    glm::vec3 position;
+    glm::vec3 size;
+    glm::vec3 rotation;
+    std::optional<std::vector<Texture>> textures;
+    std::optional<GLfloat> shininess;
+    std::string file_path;
+} ModelInfo;
 
 typedef struct CubeInfo {
     glm::vec3 position;
@@ -67,20 +88,24 @@ typedef struct CylinderInfo {
 
 class Object {
 public:
-    Object(const ObjectInfo& info);
+    Object(const ObjectInfoMat& info);
+    Object(const ObjectInfoTex& info);
     ~Object();
 
     glm::mat4 get_model() const { return m_model_matrix; }
     Material get_material() const { return m_material; }
+    GLfloat get_shininess() const { return m_shininess; }
+
+    std::vector<Texture> get_textures() const { return m_textures; }
+
+    void add_texture(const std::string& file_path, TextureType type);
+    void add_texture(const Texture& texture);
 
 private:
     glm::mat4 m_model_matrix = glm::mat4(1.0f);
-    Material m_material = {
-        {0.2f, 0.2f, 0.2f},
-        {0.5f, 0.5f, 0.5f},
-        {0.8f, 0.8f, 0.8f},
-        32
-    };
+    GLfloat m_shininess = 1.0f;
+    Material m_material = {};
+    std::vector<Texture> m_textures = {};
 };
 
 }

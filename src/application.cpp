@@ -4,10 +4,24 @@ namespace boson {
 Application::Application(const WindowConfig_t& window_config) {
     m_window = std::make_unique<Window>(window_config);
     m_proj_matrix = glm::perspective(glm::radians(45.0f), (float)window_config.width / (float)window_config.height, 0.1f, 100.0f);
-    m_view_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f));
+    m_view_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, -10.0f));
 }
 
 Application::~Application() {
+}
+
+void Application::add_model(const ModelInfo& info) {
+    std::shared_ptr<Mesh> mesh = m_mesh_manager->get_mesh(info.file_path);
+
+    if (mesh == nullptr) {
+        std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_model_mesh(info.file_path);
+
+        m_obj_data.insert({ new_mesh->get_name(), { Object({info.position, info.size, info.rotation, info.textures.value_or(new_mesh->get_textures()), info.shininess.value_or(new_mesh->get_shininess())}) }});
+        std::cout << info.file_path << "\n";
+        return;
+    }
+
+    m_obj_data.at(info.file_path).push_back(Object({info.position, info.size, info.rotation, info.textures.value_or(mesh->get_textures()), info.shininess.value_or(mesh->get_shininess())}));
 }
 
 void Application::add_cube(const CubeInfo& info) {
@@ -76,83 +90,39 @@ void Application::add_cylinder(const CylinderInfo& info) {
 void Application::run() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
+    glCullFace(GL_BACK);
 
     Shader shader = Shader("../shaders/vertex.glsl", "../shaders/fragment.glsl");
 
     Renderer renderer(shader);
-    Material material = {
-        {0.2f, 0.2f, 0.2},
-        {0.6f, 0.6f, 0.6f},
-        {0.8f, 0.8f, 0.8f},
-        32.0f
 
-    };
+    Texture diffuse("../resources/diffuse_box.png", TextureType::DIFFUSE);
+    Texture specular("../resources/specular_box.png", TextureType::SPECULAR);
+    std::vector<Texture> textures = {diffuse, specular};
 
-    Material material_two = {
-        {0.1f, 0.2f, 0.1},
-        {0.6f, 0.9f, 0.6f},
-        {0.2f, 0.7f, 0.2f},
-        10.0f
-
-    };
-
-    add_cube({
-        .position = {0.0f, 0.0f, 0.0f},
+    add_model({
+        .position = {-2.0f, 0.0f, 0.0f},
         .size = {1.0f, 1.0f, 1.0f},
-        .rotation = {45.0f, 45.0f, 0.0f},
-        .material = material,
+        .rotation = {0.0f, 45.0f, 0.0f},
+        .textures = textures,
+        .shininess = 32.0f,
+        .file_path = "../models/cube.obj",
     });
 
-    /*add_sphere({*/
-    /*    .position = {-1.5f, 0.0f, 0.0f},*/
-    /*    .sector_count = 18,*/
-    /*    .stack_count = 9,*/
-    /*    .radius = 1,*/
-    /*    .rotation = {0.0f, -2.0f, 50.0f},*/
-    /*    .material = material_two*/
-    /*});*/
-    /**/
-    /*add_sphere({*/
-    /*    .position = {3.5f, 0.0f, 0.0f},*/
-    /*    .sector_count = 18,*/
-    /*    .stack_count = 9,*/
-    /*    .radius = 1,*/
-    /*    .rotation = {0.0f, -2.0f, 50.0f},*/
-    /*    .material = material_two,*/
-    /*});*/
-    /**/
-    /*add_cube({*/
-    /*    .position = {1.5f, 2.0f, 0.0f},*/
-    /*    .size = {1.0f, 1.0f, 1.0f},*/
-    /*    .rotation = {60.0f, -15.0f, 0.0f},*/
+    add_model({
+        .position = {1.0f, 2.0f, -6.0f},
+        .size = {0.2f, 0.2f, 0.2f},
+        .rotation = {0.0f, 0.0f, 0.0f},
+        .shininess = 32.0f,
+        .file_path = "../resources/latern/Lantern.gltf",
+    });
+
+    /*add_plane({*/
+    /*    .position = {1.0f, -10.0f, 0.0f},*/
+    /*    .size = {100.0f, 200.0f},*/
+    /*    .rotation = {0.0f, 0.0f, 0.0f},*/
     /*    .material = material,*/
     /*});*/
-
-    add_cylinder({
-        .position = {3.5f, 0.0f, 0.0f},
-        .sector_count = 18,
-        .radius = 0.5,
-        .height = 1,
-        .rotation = {42.0f, -23.0f, 0.0f},
-        .material = material_two,
-    });
-
-    add_cylinder({
-        .position = {-3.5f, 0.0f, 0.0f},
-        .sector_count = 18,
-        .radius = 0.5,
-        .height = 1,
-        .rotation = {42.0f, -23.0f, 0.0f},
-        .material = material_two,
-    });
-
-    add_plane({
-        .position = {1.0f, -10.0f, 0.0f},
-        .size = {100.0f, 200.0f},
-        .rotation = {0.0f, 0.0f, 0.0f},
-        .material = material,
-    });
 
     shader.use();
     shader.set_mat4("projection", m_proj_matrix);

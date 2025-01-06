@@ -42,6 +42,25 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glm)
 
+# Fetch Assimp
+FetchContent_Declare(
+    assimp
+    GIT_REPOSITORY https://github.com/assimp/assimp.git
+    GIT_TAG v5.4.3
+    SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/assimp
+)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_NO_EXPORT ON CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+
+set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_OBJ_IMPORTER ON CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_GLTF_IMPORTER ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(assimp)
+
 # Automatically add all .cpp files in the src directory
 file(GLOB_RECURSE SOURCES src/*.cpp src/*/*.cpp)
 
@@ -60,7 +79,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     libglew_static
     glm::glm
     # nlohmann_json::nlohmann_json
-    # assimp
+)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC
+    assimp
 )
 
 # Add include directories for the project and the fetched libraries
@@ -68,11 +90,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${FETCHCONTENT_BASE_DIR}/glfw/include
     ${FETCHCONTENT_BASE_DIR}/glm
     # ${FETCHCONTENT_BASE_DIR}/glew/include
-    # ${FETCHCONTENT_BASE_DIR}/assimp/include
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${FETCHCONTENT_BASE_DIR}/assimp/include
 )
 
 # Optional: Platform-specific frameworks for macOS
