@@ -1,4 +1,5 @@
 #include "boson/mesh.h"
+#include "boson/texture.h"
 
 namespace boson {
 
@@ -25,14 +26,35 @@ void Mesh::push_index(const GLuint index) {
     m_data->push_index(index);
 }
 
-void Mesh::push_instance(const InstanceData& instance) {
+void Mesh::push_instance(const InstanceInfo& instance) {
     if (m_instance_data.size() >= m_max_data_size) {
         std::cout << "Woooooah, tooo many lad...\n";
         return;
     }
 
-    m_data->push_instance(instance, m_instance_data.size());
-    m_instance_data.emplace_back(instance);
+    InstanceData new_instance = {
+        .transform = instance.transform,
+    };
+
+    for (const auto& texture : instance.textures) {
+        switch (texture.get_type()) {
+            case TextureType::DIFFUSE: {
+                m_textures.emplace_back(texture);
+                new_instance.diffuse_map = m_textures.size() - 1;
+                break;
+            }
+            case TextureType::SPECULAR: {
+                m_textures.emplace_back(texture);
+                new_instance.specular_map = m_textures.size() - 1;
+                break;
+            }
+            default: exit(EXIT_FAILURE);
+        }
+    }
+
+    m_data->push_instance(new_instance, m_instance_data.size());
+    m_instance_data.emplace_back(new_instance);
+
 }
 
 void Mesh::send_data() {

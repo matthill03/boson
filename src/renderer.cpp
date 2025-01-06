@@ -43,34 +43,17 @@ void Renderer::render_data(const Object& obj, const Mesh& mesh) {
 }
 
 void Renderer::render_instanced(const Mesh& mesh) {
-    GLuint diffuse_count = 0;
-    GLuint specular_count = 0;
-
-    /*if (mesh.get_textures().size() > 0) {*/
-    /*    textures = mesh.get_textures();*/
-    /*} else {*/
-    /*    textures = obj.get_textures();*/
-    /*}*/
 
     std::vector<Texture> textures = mesh.get_textures();
+    //std::cout << "texture number: " << textures.size() << "\n";
 
     for (int i = 0; i < textures.size(); i++) {
         glActiveTexture(GL_TEXTURE0 + i);
         textures[i].bind();
 
-        if (textures[i].get_type() == TextureType::DIFFUSE) {
-            m_shader->set_int("material.diffuse", i);
-            diffuse_count++;
-        } else if (textures[i].get_type() == TextureType::SPECULAR) {
-            m_shader->set_int("material.specular", i);
-            specular_count++;
-        }
-    }
-    glActiveTexture(GL_TEXTURE0);
-    m_shader->set_int("material.diffuse", 0);
+        m_shader->set_int("textures[" + std::to_string(i) + "]", i);
 
-    glActiveTexture(GL_TEXTURE1);
-    m_shader->set_int("material.specular", 1);
+    }
 
     m_shader->set_float("material.shininess", mesh.get_shininess());
 

@@ -18,10 +18,11 @@ Texture::Texture(const std::string& file_path, TextureType type) : m_file_path(f
 
     // load image, create texture and generate mipmaps
     stbi_set_flip_vertically_on_load(true);
-    unsigned char *data = stbi_load(file_path.c_str(), &width, &height, &nr_channels, 0);
+    unsigned char *data = stbi_load(file_path.c_str(), &width, &height, &nr_channels, STBI_rgb_alpha);
+    std::cout << width << ", " << height << ", " << nr_channels << "\n";
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else

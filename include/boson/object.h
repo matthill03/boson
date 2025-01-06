@@ -60,7 +60,8 @@ typedef struct CubeInfo {
     glm::vec3 position;
     glm::vec3 size;
     glm::vec3 rotation;
-    Material material;
+    std::vector<Texture> textures;
+    GLfloat shininess;
 } CubeInfo;
 
 typedef struct PlaneInfo {

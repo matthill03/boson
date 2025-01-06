@@ -16,12 +16,12 @@ void Application::add_model(const ModelInfo& info) {
     if (mesh == nullptr) {
         std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_model_mesh(info.file_path);
         Object new_obj = Object({info.position, info.size, info.rotation, info.textures.value_or(new_mesh->get_textures()), info.shininess.value_or(new_mesh->get_shininess())});
-        new_mesh->push_instance({new_obj.get_model(), 0, 0});
+        new_mesh->push_instance({new_obj.get_model(), info.textures.value()});
 
         return;
     }
     Object new_obj = Object({info.position, info.size, info.rotation, info.textures.value_or(mesh->get_textures()), info.shininess.value_or(mesh->get_shininess())});
-    mesh->push_instance({new_obj.get_model(), 0, 0});
+    mesh->push_instance({new_obj.get_model(), info.textures.value()});
 
 }
 
@@ -32,14 +32,17 @@ void Application::add_cube(const CubeInfo& info) {
         // Item does not exists
         std::string new_mesh_name = m_mesh_manager->load_cube_mesh();;
         std::shared_ptr<Mesh> mesh = m_mesh_manager->get_mesh(new_mesh_name);
-        Object new_obj = Object({info.position, info.size, info.rotation, info.material});
-        mesh->push_instance({new_obj.get_model(), 0, 0});
+
+        Object new_obj = Object({info.position, info.size, info.rotation, info.textures, info.shininess});
+        mesh->push_instance({new_obj.get_model(), info.textures});
 
         //m_obj_data.insert({new_mesh, { Object({info.position, info.size, info.rotation, info.material}) }});
         return;
     }
 
-    m_obj_data.at("cube").push_back(Object({info.position, info.size, info.rotation, info.material}));
+    Object new_obj = Object({info.position, info.size, info.rotation, info.textures, info.shininess});
+    mesh->push_instance({new_obj.get_model(), info.textures});
+    //m_obj_data.at("cube").push_back(Object({info.position, info.size, info.rotation, info.material}));
 }
 
 void Application::add_plane(const PlaneInfo& info) {
@@ -101,6 +104,10 @@ void Application::run() {
     Texture diffuse("../resources/diffuse_box.png", TextureType::DIFFUSE);
     Texture specular("../resources/specular_box.png", TextureType::SPECULAR);
     std::vector<Texture> textures = {diffuse, specular};
+    
+    Texture diffuse_two("../resources/cobblestone.png", TextureType::DIFFUSE);
+    Texture specular_two("../resources/cobble_spec.png", TextureType::SPECULAR);
+    std::vector<Texture> textures_two = {diffuse_two, specular_two};
 
     add_model({
         .position = {1.0f, 0.0f, 0.0f},
@@ -115,19 +122,28 @@ void Application::run() {
         .position = {6.0f, 0.0f, 0.0f},
         .size = {1.0f, 1.0f, 1.0f},
         .rotation = {0.0f, 45.0f, 0.0f},
-        .textures = textures,
+        .textures = textures_two,
         .shininess = 32.0f,
         .file_path = "../resources/cube.obj",
     });
 
-    add_model({
+    /*add_model({*/
+    /*    .position = {-4.0f, 0.0f, 0.0f},*/
+    /*    .size = {1.0f, 1.0f, 1.0f},*/
+    /*    .rotation = {0.0f, 45.0f, 0.0f},*/
+    /*    .textures = textures_two,*/
+    /*    .shininess = 32.0f,*/
+    /*    .file_path = "../resources/cube.obj",*/
+    /*});*/
+
+    add_cube({
         .position = {-4.0f, 0.0f, 0.0f},
         .size = {1.0f, 1.0f, 1.0f},
         .rotation = {0.0f, 45.0f, 0.0f},
-        .textures = textures,
+        .textures = textures_two,
         .shininess = 32.0f,
-        .file_path = "../resources/cube.obj",
     });
+
 
     /*add_model({*/
     /*    .position = {1.0f, 2.0f, -6.0f},*/

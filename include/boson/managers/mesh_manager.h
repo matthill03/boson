@@ -97,28 +97,28 @@ private:
 
     std::vector<GLuint> cube_indices = {
         // Front face
-        0, 1, 2,
-        2, 3, 0,
+        2, 1, 0,
+        0, 3, 2,
 
         // Back face
-        5, 4, 7,
-        7, 6, 5,
+        7, 4, 5,
+        5, 6, 7,
 
         // Left face
-        8, 9, 10,
-        10, 11, 8,
+        10, 9, 8,
+        8, 11, 10,
 
         // Right face
-        12, 13, 14,
-        14, 15, 12,
+        14, 13, 12,
+        12, 15, 14,
 
         // Top face
-        16, 17, 18,
-        18, 19, 16,
+        18, 17, 16,
+        16, 19, 18,
 
         // Bottom face
-        20, 21, 22,
-        22, 23, 20
+        22, 21, 20,
+        20, 23, 22
     };
 
     std::shared_ptr<Mesh> process_scene_mesh(const aiNode& child, const aiScene& scene, const std::string& model_root_path);

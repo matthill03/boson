@@ -9,6 +9,11 @@
 
 namespace boson {
 
+typedef struct InstanceInfo {
+    glm::mat4 transform;
+    std::vector<Texture> textures;
+} InstanceInfo;
+
 class Mesh {
 public:
     Mesh(const std::string& name, const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices, GLuint next_mesh_id);
@@ -19,7 +24,7 @@ public:
 
     void push_vertex(const Vertex vertex);
     void push_index(const GLuint index);
-    void push_instance(const InstanceData& instance);
+    void push_instance(const InstanceInfo& instance);
 
     void send_data();
 

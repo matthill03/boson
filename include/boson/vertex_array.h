@@ -5,8 +5,6 @@
 
 #include <iostream>
 
-#include "boson/object.h"
-
 namespace boson {
 
 typedef struct Vertex {
