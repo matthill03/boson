@@ -1,4 +1,5 @@
 #include "boson/application.h"
+#include <memory>
 
 namespace boson {
 Application::Application(const WindowConfig_t& window_config) {
@@ -15,12 +16,16 @@ void Application::add_model(const ModelInfo& info) {
 
     if (mesh == nullptr) {
         std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_model_mesh(info.file_path);
+        Object new_obj = Object({info.position, info.size, info.rotation, info.textures.value_or(new_mesh->get_textures()), info.shininess.value_or(new_mesh->get_shininess())});
+        new_mesh->push_instance(new_obj.get_model());
 
-        m_obj_data.insert({ new_mesh->get_name(), { Object({info.position, info.size, info.rotation, info.textures.value_or(new_mesh->get_textures()), info.shininess.value_or(new_mesh->get_shininess())}) }});
+        /*m_obj_data.insert({ new_mesh->get_name(), { Object({info.position, info.size, info.rotation, info.textures.value_or(new_mesh->get_textures()), info.shininess.value_or(new_mesh->get_shininess())}) }});*/
         return;
     }
+    Object new_obj = Object({info.position, info.size, info.rotation, info.textures.value_or(mesh->get_textures()), info.shininess.value_or(mesh->get_shininess())});
+    mesh->push_instance(new_obj.get_model());
 
-    m_obj_data.at(info.file_path).push_back(Object({info.position, info.size, info.rotation, info.textures.value_or(mesh->get_textures()), info.shininess.value_or(mesh->get_shininess())}));
+    /*m_obj_data.at(info.file_path).push_back(Object({info.position, info.size, info.rotation, info.textures.value_or(mesh->get_textures()), info.shininess.value_or(mesh->get_shininess())}));*/
 }
 
 void Application::add_cube(const CubeInfo& info) {
@@ -28,9 +33,12 @@ void Application::add_cube(const CubeInfo& info) {
 
     if (mesh == nullptr) {
         // Item does not exists
-        std::string new_mesh = m_mesh_manager->load_cube_mesh();;
+        std::string new_mesh_name = m_mesh_manager->load_cube_mesh();;
+        std::shared_ptr<Mesh> mesh = m_mesh_manager->get_mesh(new_mesh_name);
+        Object new_obj = Object({info.position, info.size, info.rotation, info.material});
+        mesh->push_instance(new_obj.get_model());
 
-        m_obj_data.insert({new_mesh, { Object({info.position, info.size, info.rotation, info.material}) }});
+        //m_obj_data.insert({new_mesh, { Object({info.position, info.size, info.rotation, info.material}) }});
         return;
     }
 
@@ -107,12 +115,21 @@ void Application::run() {
     });
 
     add_model({
-        .position = {1.0f, 2.0f, -6.0f},
-        .size = {0.2f, 0.2f, 0.2f},
-        .rotation = {0.0f, 0.0f, 0.0f},
+        .position = {2.0f, 0.0f, 0.0f},
+        .size = {1.0f, 1.0f, 1.0f},
+        .rotation = {0.0f, 45.0f, 0.0f},
+        .textures = textures,
         .shininess = 32.0f,
-        .file_path = "../resources/latern/Lantern.gltf",
+        .file_path = "../resources/cube.obj",
     });
+
+    /*add_model({*/
+    /*    .position = {1.0f, 2.0f, -6.0f},*/
+    /*    .size = {0.2f, 0.2f, 0.2f},*/
+    /*    .rotation = {0.0f, 0.0f, 0.0f},*/
+    /*    .shininess = 32.0f,*/
+    /*    .file_path = "../resources/latern/Lantern.gltf",*/
+    /*});*/
 
     /*add_plane({*/
     /*    .position = {1.0f, -10.0f, 0.0f},*/
@@ -134,9 +151,14 @@ void Application::run() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-        for (const auto& obj_set : m_obj_data) {
-            renderer.draw(*m_mesh_manager->get_mesh(obj_set.first), obj_set.second);
+        /*for (const auto& obj_set : m_obj_data) {*/
+        /*    renderer.draw(*m_mesh_manager->get_mesh(obj_set.first), obj_set.second);*/
+        /*}*/
+
+        for (const auto& mesh : m_mesh_manager->get_meshes()) {
+            renderer.draw(*mesh.second, {});
         }
+
 
         glfwSwapBuffers(m_window->get_handle());
         glfwPollEvents();

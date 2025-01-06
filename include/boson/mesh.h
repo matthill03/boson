@@ -20,20 +20,20 @@ public:
 
     void push_vertex(const Vertex vertex);
     void push_index(const GLuint index);
+    void push_instance(const glm::mat4& instance);
 
     void send_data();
 
     void set_shininess(GLfloat value) { m_shininess = value; };
-    void set_base_tranform(glm::mat4 transform) { m_base_transform = transform; }
 
     GLuint get_id() const { return m_id; }
     GLuint get_index_count() const { return m_data->index_count(); }
     GLuint get_vertex_count() const { return m_data->vertex_count(); }
+    GLuint get_instance_count() const { return m_instance_transform_data.size(); }
     std::string get_name() const { return m_name; }
 
     std::vector<Texture> get_textures() const { return m_textures; }
     GLfloat get_shininess() const { return m_shininess; }
-    glm::mat4 get_base_tranform() const { return m_base_transform; }
 
     std::vector<std::shared_ptr<Mesh>> get_children() const { return m_child_data; }
 
@@ -43,12 +43,13 @@ public:
     void add_child(std::shared_ptr<Mesh> child) { m_child_data.push_back(child); };
 
 private:
+    const GLuint m_max_data_size = 1000;
+
     GLuint m_id;
     std::string m_name;
     std::unique_ptr<VertexArray> m_data = nullptr;
     std::vector<std::shared_ptr<Mesh>> m_child_data = {};
-
-    glm::mat4 m_base_transform;
+    std::vector<glm::mat4> m_instance_transform_data = {};
 
     std::vector<Texture> m_textures = {};
     GLfloat m_shininess = 1.0f;

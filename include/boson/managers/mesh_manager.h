@@ -38,6 +38,8 @@ public:
 
     glm::mat4 convert_matrix(const aiMatrix4x4& mat);
 
+    std::unordered_map<std::string, std::shared_ptr<Mesh>> get_meshes() const { return m_mesh_map; }
+
 private:
     std::unordered_map<std::string, std::shared_ptr<Mesh>> m_mesh_map = {};
 
@@ -120,6 +122,7 @@ private:
     };
 
     std::shared_ptr<Mesh> process_scene_mesh(const aiNode& child, const aiScene& scene, const std::string& model_root_path);
+    void process_node(const std::shared_ptr<Mesh> mesh, const aiNode& node, const aiScene& scene, const std::string& model_root_path, glm::mat4 parent_transform);
 };
 
 }

@@ -1,5 +1,4 @@
 #include "boson/managers/mesh_manager.h"
-#include "assimp/matrix4x4.h"
 
 namespace boson {
 
@@ -10,71 +9,77 @@ MeshManager::MeshManager() {
 MeshManager::~MeshManager() {
 }
 
-std::shared_ptr<Mesh> MeshManager::process_scene_mesh(const aiNode& child, const aiScene& scene, const std::string& model_root_path) {
-    std::shared_ptr<Mesh> new_mesh = std::make_shared<Mesh>(child.mName.C_Str(), m_next_mesh_id);
-    m_next_mesh_id++;
+void MeshManager::process_node(const std::shared_ptr<Mesh> mesh, const aiNode& node, const aiScene& scene, const std::string& model_root_path, glm::mat4 parent_transform) {
 
-    aiMesh* mesh = scene.mMeshes[child.mMeshes[0]];
-    aiMatrix4x4 base_transform = child.mTransformation;
+    glm::mat4 node_transform = parent_transform * convert_matrix(node.mTransformation);
 
-    new_mesh->set_base_tranform(convert_matrix(base_transform));
+    for (int i = 0; i < node.mNumMeshes; i++) {
+       aiMesh* node_mesh = scene.mMeshes[node.mMeshes[i]];
 
-    for (GLuint i = 0; i < mesh->mNumVertices; i++) {
-        Vertex vertex;
-        vertex.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+        GLuint base_index = mesh->get_vertex_count();
 
-        if (mesh->HasNormals()) {
-            vertex.normal = glm::vec3((GLfloat)mesh->mNormals[i].x, (GLfloat)mesh->mNormals[i].y, (GLfloat)mesh->mNormals[i].z);
-        } else {
-            vertex.normal = glm::vec3(0.0f, 0.0f, 0.0f);
+        for (GLuint i = 0; i < node_mesh->mNumVertices; i++) {
+            Vertex vertex;
+            glm::vec4 transformed_pos = node_transform * glm::vec4(node_mesh->mVertices[i].x, node_mesh->mVertices[i].y, node_mesh->mVertices[i].z, 1.0f);
+            vertex.position = glm::vec3(transformed_pos);
+
+            if (node_mesh->HasNormals()) {
+                glm::vec3 transformed_norm = glm::mat3(glm::transpose(glm::inverse(node_transform))) * glm::vec3(node_mesh->mNormals[i].x, node_mesh->mNormals[i].y, node_mesh->mNormals[i].z);
+
+                vertex.normal = transformed_norm;
+            } else {
+                vertex.normal = glm::vec3(0.0f, 0.0f, 0.0f);
+            }
+
+            if (node_mesh->HasTextureCoords(0)) {
+                vertex.tex_coord = glm::vec2((GLfloat)node_mesh->mTextureCoords[0][i].x, (GLfloat)node_mesh->mTextureCoords[0][i].y);
+            } else {
+                vertex.tex_coord = glm::vec2(0.0f, 0.0f);
+            }
+
+            mesh->push_vertex(vertex);
+
         }
 
-        if (mesh->HasTextureCoords(0)) {
-            vertex.tex_coord = glm::vec2((GLfloat)mesh->mTextureCoords[0][i].x, (GLfloat)mesh->mTextureCoords[0][i].y);
-        } else {
-            vertex.tex_coord = glm::vec2(0.0f, 0.0f);
+        for (GLuint i = 0; i < node_mesh->mNumFaces; i++) {
+            aiFace& face = node_mesh->mFaces[i];
+
+            for (GLuint j = 0; j < face.mNumIndices; j++) {
+                mesh->push_index(face.mIndices[j] + base_index);
+            }
         }
 
-        new_mesh->push_vertex(vertex);
+        if (node_mesh->mMaterialIndex >= 0) {
+            aiMaterial* material = scene.mMaterials[node_mesh->mMaterialIndex];
 
+            aiString diffuse_path;
+            aiString specular_path;
+
+            if (material->GetTextureCount(aiTextureType::aiTextureType_DIFFUSE) > 0) {
+                material->GetTexture(aiTextureType::aiTextureType_DIFFUSE, 0, &diffuse_path);
+
+                mesh->add_texture(model_root_path.c_str() + std::string(diffuse_path.C_Str()), TextureType::DIFFUSE);
+
+            }
+
+            if (material->GetTextureCount(aiTextureType::aiTextureType_SPECULAR) > 0) {
+                material->GetTexture(aiTextureType::aiTextureType_SPECULAR, 0, &specular_path);
+
+                mesh->add_texture(model_root_path.c_str() + std::string(specular_path.C_Str()), TextureType::SPECULAR);
+            }
+
+            GLfloat shininess;
+            if (material->Get(AI_MATKEY_SHININESS_STRENGTH, shininess) == AI_SUCCESS) {
+                mesh->set_shininess(shininess);
+            }
+        }
     }
 
-    for (GLuint i = 0; i < mesh->mNumFaces; i++) {
-        aiFace& face = mesh->mFaces[i];
-
-        for (GLuint j = 0; j < face.mNumIndices; j++) {
-            new_mesh->push_index(face.mIndices[j]);
-        }
+    for (int i = 0; i < node.mNumChildren; i++) {
+        process_node(mesh, *node.mChildren[i], scene, model_root_path, node_transform);
     }
 
-    if (mesh->mMaterialIndex >= 0) {
-        aiMaterial* material = scene.mMaterials[mesh->mMaterialIndex];
-
-        aiString diffuse_path;
-        aiString specular_path;
-
-        if (material->GetTextureCount(aiTextureType::aiTextureType_DIFFUSE) > 0) {
-            material->GetTexture(aiTextureType::aiTextureType_DIFFUSE, 0, &diffuse_path);
-
-            new_mesh->add_texture(model_root_path.c_str() + std::string(diffuse_path.C_Str()), TextureType::DIFFUSE);
-
-        }
-
-        if (material->GetTextureCount(aiTextureType::aiTextureType_SPECULAR) > 0) {
-            material->GetTexture(aiTextureType::aiTextureType_SPECULAR, 0, &specular_path);
-
-            new_mesh->add_texture(model_root_path.c_str() + std::string(specular_path.C_Str()), TextureType::SPECULAR);
-        }
-
-        GLfloat shininess;
-        if (material->Get(AI_MATKEY_SHININESS_STRENGTH, shininess) == AI_SUCCESS) {
-            new_mesh->set_shininess(shininess);
-        }
-    }
-
-
-    new_mesh->send_data();
-    return new_mesh;
+    mesh->send_data();
 }
 
 std::shared_ptr<Mesh> MeshManager::load_model_mesh(const std::string& file_path) {
@@ -96,13 +101,9 @@ std::shared_ptr<Mesh> MeshManager::load_model_mesh(const std::string& file_path)
 
     aiNode* root_node = scene->mRootNode;
 
-    for (int i = 0; i < root_node->mNumChildren; i++) {
-        aiNode* child = root_node->mChildren[i];
-
-        std::shared_ptr<Mesh> child_mesh = process_scene_mesh(*child, *scene, model_root_path);
-
-        new_mesh->add_child(child_mesh);
-    }
+    process_node(new_mesh, *scene->mRootNode, *scene, model_root_path, glm::mat4(1.0f));
+    std::cout << "Mesh vertex count: " << new_mesh->get_vertex_count() * sizeof(Vertex) << "\n";
+    std::cout << "Mesh index count: " << new_mesh->get_index_count() * sizeof(GLuint) << "\n";
 
     m_mesh_map.insert({ file_path, new_mesh });
     return new_mesh;
