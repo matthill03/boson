@@ -51,7 +51,7 @@ typedef struct ModelInfo {
     glm::vec3 position;
     glm::vec3 size;
     glm::vec3 rotation;
-    std::optional<std::vector<Texture>> textures;
+    std::vector<Texture> textures;
     std::optional<GLfloat> shininess;
     std::string file_path;
 } ModelInfo;

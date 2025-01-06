@@ -15,13 +15,13 @@ void Application::add_model(const ModelInfo& info) {
 
     if (mesh == nullptr) {
         std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_model_mesh(info.file_path);
-        Object new_obj = Object({info.position, info.size, info.rotation, info.textures.value_or(new_mesh->get_textures()), info.shininess.value_or(new_mesh->get_shininess())});
-        new_mesh->push_instance({new_obj.get_model(), info.textures.value()});
+        Object new_obj = Object({info.position, info.size, info.rotation, info.textures, info.shininess.value_or(new_mesh->get_shininess())});
+        new_mesh->push_instance({new_obj.get_model(), info.textures});
 
         return;
     }
-    Object new_obj = Object({info.position, info.size, info.rotation, info.textures.value_or(mesh->get_textures()), info.shininess.value_or(mesh->get_shininess())});
-    mesh->push_instance({new_obj.get_model(), info.textures.value()});
+    Object new_obj = Object({info.position, info.size, info.rotation, info.textures, info.shininess.value_or(mesh->get_shininess())});
+    mesh->push_instance({new_obj.get_model(), info.textures});
 
 }
 
@@ -127,15 +127,6 @@ void Application::run() {
         .file_path = "../resources/cube.obj",
     });
 
-    /*add_model({*/
-    /*    .position = {-4.0f, 0.0f, 0.0f},*/
-    /*    .size = {1.0f, 1.0f, 1.0f},*/
-    /*    .rotation = {0.0f, 45.0f, 0.0f},*/
-    /*    .textures = textures_two,*/
-    /*    .shininess = 32.0f,*/
-    /*    .file_path = "../resources/cube.obj",*/
-    /*});*/
-
     add_cube({
         .position = {-4.0f, 0.0f, 0.0f},
         .size = {1.0f, 1.0f, 1.0f},
@@ -145,13 +136,13 @@ void Application::run() {
     });
 
 
-    /*add_model({*/
-    /*    .position = {1.0f, 2.0f, -6.0f},*/
-    /*    .size = {0.2f, 0.2f, 0.2f},*/
-    /*    .rotation = {0.0f, 0.0f, 0.0f},*/
-    /*    .shininess = 32.0f,*/
-    /*    .file_path = "../resources/latern/Lantern.gltf",*/
-    /*});*/
+    add_model({
+        .position = {1.0f, 2.0f, -6.0f},
+        .size = {0.2f, 0.2f, 0.2f},
+        .rotation = {0.0f, 0.0f, 0.0f},
+        .shininess = 32.0f,
+        .file_path = "../resources/latern/Lantern.gltf",
+    });
 
     /*add_plane({*/
     /*    .position = {1.0f, -10.0f, 0.0f},*/
