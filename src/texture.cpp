@@ -4,7 +4,6 @@
 namespace boson {
 
 Texture::Texture(const std::string& file_path, TextureType type) : m_file_path(file_path), m_type(type){
-    std::cout << file_path << "\n";
     glGenTextures(1, &m_id);
     bind();
 

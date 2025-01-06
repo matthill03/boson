@@ -93,8 +93,6 @@ std::shared_ptr<Mesh> MeshManager::load_model_mesh(const std::string& file_path)
     }
 
     std::cout << "INFO >> Loaded model '" << file_path << "' correctly...\n";
-    std::cout << scene->mRootNode->mName.C_Str() << "\n"; ;
-    std::cout << scene->mRootNode->mNumChildren << "\n"; ;
 
     aiNode* root_node = scene->mRootNode;
 
@@ -106,7 +104,6 @@ std::shared_ptr<Mesh> MeshManager::load_model_mesh(const std::string& file_path)
         new_mesh->add_child(child_mesh);
     }
 
-    std::cout << new_mesh->get_children().size() << "\n";
     m_mesh_map.insert({ file_path, new_mesh });
     return new_mesh;
 }

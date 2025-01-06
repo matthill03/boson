@@ -17,7 +17,6 @@ void Application::add_model(const ModelInfo& info) {
         std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_model_mesh(info.file_path);
 
         m_obj_data.insert({ new_mesh->get_name(), { Object({info.position, info.size, info.rotation, info.textures.value_or(new_mesh->get_textures()), info.shininess.value_or(new_mesh->get_shininess())}) }});
-        std::cout << info.file_path << "\n";
         return;
     }
 
@@ -62,7 +61,6 @@ void Application::add_sphere(const SphereInfo& info) {
         std::string new_mesh = m_mesh_manager->load_sphere_mesh(info.sector_count, info.stack_count, info.radius, sphere_name);
 
         m_obj_data.insert({new_mesh, { Object({info.position, glm::vec3(1.0f), info.rotation, info.material}) }});
-        std::cout << sphere_name << "\n";
         return;
     }
 
@@ -80,7 +78,6 @@ void Application::add_cylinder(const CylinderInfo& info) {
         std::string new_mesh = m_mesh_manager->load_cylinder_mesh(info.sector_count, info.radius, info.height, cylinder_name);
 
         m_obj_data.insert({new_mesh, { Object({info.position, glm::vec3(1.0f), info.rotation, info.material}) }});
-        std::cout << cylinder_name << "\n";
         return;
     }
 
@@ -106,7 +103,7 @@ void Application::run() {
         .rotation = {0.0f, 45.0f, 0.0f},
         .textures = textures,
         .shininess = 32.0f,
-        .file_path = "../models/cube.obj",
+        .file_path = "../resources/cube.obj",
     });
 
     add_model({
