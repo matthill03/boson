@@ -10,13 +10,21 @@ VertexArray::VertexArray(GLuint max_instances) : m_max_instances(max_instances){
 
     bind();
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_instances);
-    glBufferData(GL_ARRAY_BUFFER, m_max_instances * sizeof(glm::mat4), nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_max_instances * sizeof(InstanceData), nullptr, GL_DYNAMIC_DRAW);
 
     for (int i = 0; i < 4; i++) {
-        glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4) * i));
+        glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(sizeof(glm::vec4) * i));
         glEnableVertexAttribArray(3 + i);
         glVertexAttribDivisor(3 + i, 1);
     }
+
+    glVertexAttribIPointer(7, 1, GL_INT, sizeof(InstanceData), (void*)offsetof(InstanceData, diffuse_map));
+    glEnableVertexAttribArray(7);
+    glVertexAttribDivisor(7, 1);
+
+    glVertexAttribIPointer(8, 1, GL_INT, sizeof(InstanceData), (void*)offsetof(InstanceData, specular_map));
+    glEnableVertexAttribArray(8);
+    glVertexAttribDivisor(8, 1);
     unbind();
 }
 
@@ -28,10 +36,10 @@ void VertexArray::push_index(const GLuint index) {
     m_indices.push_back(index);
 }
 
-void VertexArray::push_instance(const glm::mat4& instance, GLuint data_size) {
+void VertexArray::push_instance(const InstanceData& instance, GLuint instance_count) {
     bind();
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_instances);
-    glBufferSubData(GL_ARRAY_BUFFER, data_size * sizeof(glm::mat4), sizeof(glm::mat4), &instance[0][0]);
+    glBufferSubData(GL_ARRAY_BUFFER, instance_count * sizeof(InstanceData), sizeof(InstanceData), &instance);
     unbind();
 }
 

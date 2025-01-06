@@ -17,6 +17,13 @@ typedef struct {
 
 } Material;
 
+typedef struct InstanceMaterial{
+    GLint diffuse;
+    GLint specular;
+    GLfloat shininess;
+
+} InstanceMaterial;
+
 enum class ObjectType {
     CUBE,
     PLANE,

@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+#include "boson/object.h"
+
 namespace boson {
 
 typedef struct Vertex {
@@ -12,6 +14,12 @@ typedef struct Vertex {
     glm::vec3 normal;
     glm::vec2 tex_coord;
 } Vertex;
+
+typedef struct InstanceData {
+    glm::mat4 transform;
+    GLint diffuse_map;
+    GLint specular_map;
+} InstanceData;
 
 class VertexArray {
 public:
@@ -23,7 +31,7 @@ public:
 
     void push_vertex(const Vertex vertex);
     void push_index(const GLuint index);
-    void push_instance(const glm::mat4& instance, GLuint data_size);
+    void push_instance(const InstanceData& instance, GLuint instance_count);
 
     void set_vertex_data(const std::vector<Vertex>& vertices);
     void set_index_data(const std::vector<GLuint>& indices);

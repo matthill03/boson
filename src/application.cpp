@@ -1,5 +1,4 @@
 #include "boson/application.h"
-#include <memory>
 
 namespace boson {
 Application::Application(const WindowConfig_t& window_config) {
@@ -17,15 +16,13 @@ void Application::add_model(const ModelInfo& info) {
     if (mesh == nullptr) {
         std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_model_mesh(info.file_path);
         Object new_obj = Object({info.position, info.size, info.rotation, info.textures.value_or(new_mesh->get_textures()), info.shininess.value_or(new_mesh->get_shininess())});
-        new_mesh->push_instance(new_obj.get_model());
+        new_mesh->push_instance({new_obj.get_model(), 0, 0});
 
-        /*m_obj_data.insert({ new_mesh->get_name(), { Object({info.position, info.size, info.rotation, info.textures.value_or(new_mesh->get_textures()), info.shininess.value_or(new_mesh->get_shininess())}) }});*/
         return;
     }
     Object new_obj = Object({info.position, info.size, info.rotation, info.textures.value_or(mesh->get_textures()), info.shininess.value_or(mesh->get_shininess())});
-    mesh->push_instance(new_obj.get_model());
+    mesh->push_instance({new_obj.get_model(), 0, 0});
 
-    /*m_obj_data.at(info.file_path).push_back(Object({info.position, info.size, info.rotation, info.textures.value_or(mesh->get_textures()), info.shininess.value_or(mesh->get_shininess())}));*/
 }
 
 void Application::add_cube(const CubeInfo& info) {
@@ -36,7 +33,7 @@ void Application::add_cube(const CubeInfo& info) {
         std::string new_mesh_name = m_mesh_manager->load_cube_mesh();;
         std::shared_ptr<Mesh> mesh = m_mesh_manager->get_mesh(new_mesh_name);
         Object new_obj = Object({info.position, info.size, info.rotation, info.material});
-        mesh->push_instance(new_obj.get_model());
+        mesh->push_instance({new_obj.get_model(), 0, 0});
 
         //m_obj_data.insert({new_mesh, { Object({info.position, info.size, info.rotation, info.material}) }});
         return;

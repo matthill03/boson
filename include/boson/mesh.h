@@ -6,7 +6,6 @@
 
 #include <boson/vertex_array.h>
 #include <boson/texture.h>
-#include "boson/object.h"
 
 namespace boson {
 
@@ -20,7 +19,7 @@ public:
 
     void push_vertex(const Vertex vertex);
     void push_index(const GLuint index);
-    void push_instance(const glm::mat4& instance);
+    void push_instance(const InstanceData& instance);
 
     void send_data();
 
@@ -29,7 +28,7 @@ public:
     GLuint get_id() const { return m_id; }
     GLuint get_index_count() const { return m_data->index_count(); }
     GLuint get_vertex_count() const { return m_data->vertex_count(); }
-    GLuint get_instance_count() const { return m_instance_transform_data.size(); }
+    GLuint get_instance_count() const { return m_instance_data.size(); }
     std::string get_name() const { return m_name; }
 
     std::vector<Texture> get_textures() const { return m_textures; }
@@ -44,15 +43,23 @@ public:
 
 private:
     const GLuint m_max_data_size = 1000;
+    const GLuint m_max_textures = 64;
 
     GLuint m_id;
     std::string m_name;
     std::unique_ptr<VertexArray> m_data = nullptr;
     std::vector<std::shared_ptr<Mesh>> m_child_data = {};
-    std::vector<glm::mat4> m_instance_transform_data = {};
+
+    std::vector<InstanceData> m_instance_data = {};
 
     std::vector<Texture> m_textures = {};
+
+    GLuint diffuse_textures;
+    GLuint specular_textures;
+
     GLfloat m_shininess = 1.0f;
+
+    void create_texture_arrays();
 };
 
 }
