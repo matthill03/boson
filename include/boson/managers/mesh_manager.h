@@ -26,10 +26,10 @@ public:
     MeshManager();
     ~MeshManager();
 
-    std::string load_cube_mesh();
-    std::string load_plane_mesh();
-    std::string load_sphere_mesh(GLint sector_count, GLint stack_count, GLfloat radius, const std::string& name);
-    std::string load_cylinder_mesh(GLint sector_count, GLfloat radius, GLfloat height, const std::string& name);
+    std::shared_ptr<Mesh> load_cube_mesh();
+    std::shared_ptr<Mesh> load_plane_mesh();
+    std::shared_ptr<Mesh> load_sphere_mesh(GLint sector_count, GLint stack_count, GLfloat radius, const std::string& name);
+    std::shared_ptr<Mesh> load_cylinder_mesh(GLint sector_count, GLfloat radius, GLfloat height, const std::string& name);
     std::shared_ptr<Mesh> load_model_mesh(const std::string& file_path);
     std::shared_ptr<Mesh> get_mesh(const std::string& name);
 
@@ -53,8 +53,8 @@ private:
     };
 
     std::vector<GLuint> plane_indicies = {
-        2, 3, 0,
-        0, 1, 2
+        0, 3, 2,
+        2, 1, 0
     };
 
     std::vector<Vertex> cube_vertices = {

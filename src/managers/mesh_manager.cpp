@@ -14,17 +14,17 @@ void MeshManager::process_node(const std::shared_ptr<Mesh> mesh, const aiNode& n
     glm::mat4 node_transform = parent_transform * convert_matrix(node.mTransformation);
 
     for (int i = 0; i < node.mNumMeshes; i++) {
-       aiMesh* node_mesh = scene.mMeshes[node.mMeshes[i]];
+        aiMesh* node_mesh = scene.mMeshes[node.mMeshes[i]];
 
         GLuint base_index = mesh->get_vertex_count();
 
-        for (GLuint i = 0; i < node_mesh->mNumVertices; i++) {
+        for (GLuint j = 0; j < node_mesh->mNumVertices; j++) {
             Vertex vertex;
-            glm::vec4 transformed_pos = node_transform * glm::vec4(node_mesh->mVertices[i].x, node_mesh->mVertices[i].y, node_mesh->mVertices[i].z, 1.0f);
+            glm::vec4 transformed_pos = node_transform * glm::vec4(node_mesh->mVertices[j].x, node_mesh->mVertices[j].y, node_mesh->mVertices[j].z, 1.0f);
             vertex.position = glm::vec3(transformed_pos);
 
             if (node_mesh->HasNormals()) {
-                glm::vec3 transformed_norm = glm::mat3(glm::transpose(glm::inverse(node_transform))) * glm::vec3(node_mesh->mNormals[i].x, node_mesh->mNormals[i].y, node_mesh->mNormals[i].z);
+                glm::vec3 transformed_norm = glm::mat3(glm::transpose(glm::inverse(node_transform))) * glm::vec3(node_mesh->mNormals[j].x, node_mesh->mNormals[j].y, node_mesh->mNormals[j].z);
 
                 vertex.normal = transformed_norm;
             } else {
@@ -32,20 +32,19 @@ void MeshManager::process_node(const std::shared_ptr<Mesh> mesh, const aiNode& n
             }
 
             if (node_mesh->HasTextureCoords(0)) {
-                vertex.tex_coord = glm::vec2((GLfloat)node_mesh->mTextureCoords[0][i].x, (GLfloat)node_mesh->mTextureCoords[0][i].y);
+                vertex.tex_coord = glm::vec2((GLfloat)node_mesh->mTextureCoords[0][j].x, (GLfloat)node_mesh->mTextureCoords[0][j].y);
             } else {
                 vertex.tex_coord = glm::vec2(0.0f, 0.0f);
             }
 
             mesh->push_vertex(vertex);
-
         }
 
-        for (GLuint i = 0; i < node_mesh->mNumFaces; i++) {
-            aiFace& face = node_mesh->mFaces[i];
+        for (GLuint f = 0; f < node_mesh->mNumFaces; f++) {
+            aiFace& face = node_mesh->mFaces[f];
 
-            for (GLuint j = 0; j < face.mNumIndices; j++) {
-                mesh->push_index(face.mIndices[j] + base_index);
+            for (GLuint o = 0; o < face.mNumIndices; o++) {
+                mesh->push_index(face.mIndices[o] + base_index);
             }
         }
 
@@ -102,32 +101,33 @@ std::shared_ptr<Mesh> MeshManager::load_model_mesh(const std::string& file_path)
     aiNode* root_node = scene->mRootNode;
 
     process_node(new_mesh, *scene->mRootNode, *scene, model_root_path, glm::mat4(1.0f));
-    std::cout << "Mesh vertex count: " << new_mesh->get_vertex_count() * sizeof(Vertex) << "\n";
-    std::cout << "Mesh index count: " << new_mesh->get_index_count() * sizeof(GLuint) << "\n";
+    std::cout << "Mesh vertex count: " << new_mesh->get_vertex_count() << "\n";
+    std::cout << "Mesh index count: " << new_mesh->get_index_count() << "\n";
+    std::cout << "Mesh triangle count: " << new_mesh->get_index_count() / 3 << "\n";
 
     m_mesh_map.insert({ file_path, new_mesh });
     return new_mesh;
 }
 
-std::string MeshManager::load_cube_mesh() {
+std::shared_ptr<Mesh> MeshManager::load_cube_mesh() {
     std::shared_ptr<Mesh> new_mesh = std::make_shared<Mesh>("cube", cube_vertices, cube_indices, m_next_mesh_id);
     m_next_mesh_id++;
 
     m_mesh_map.insert({ "cube", new_mesh});
 
-    return "cube";
+    return new_mesh;
 }
 
-std::string MeshManager::load_plane_mesh() {
+std::shared_ptr<Mesh> MeshManager::load_plane_mesh() {
     std::shared_ptr<Mesh> new_mesh = std::make_shared<Mesh>("plane", plane_vertices, plane_indicies, m_next_mesh_id);
     m_next_mesh_id++;
 
     m_mesh_map.insert({ "plane", new_mesh});
 
-    return "plane";
+    return new_mesh;
 }
 
-std::string MeshManager::load_sphere_mesh(GLint sector_count, GLint stack_count, GLfloat radius, const std::string& name) {
+std::shared_ptr<Mesh> MeshManager::load_sphere_mesh(GLint sector_count, GLint stack_count, GLfloat radius, const std::string& name) {
     // NOTE: Look at using Cube sphere or ico sphere!!!
     //std::cout << "Sectors: " << sector_count << ", Stacks: " << stack_count << "\n";
     std::shared_ptr<Mesh> new_mesh = std::make_shared<Mesh>(name, m_next_mesh_id);
@@ -186,10 +186,10 @@ std::string MeshManager::load_sphere_mesh(GLint sector_count, GLint stack_count,
     new_mesh->send_data();
     m_mesh_map.insert({ name, new_mesh });
 
-    return name;
+    return new_mesh;
 }
 
-std::string MeshManager::load_cylinder_mesh(GLint sector_count, GLfloat radius, GLfloat height, const std::string& name) {
+std::shared_ptr<Mesh> MeshManager::load_cylinder_mesh(GLint sector_count, GLfloat radius, GLfloat height, const std::string& name) {
 
     std::shared_ptr<Mesh> new_mesh = std::make_shared<Mesh>(name, m_next_mesh_id);
     m_next_mesh_id++;
@@ -254,7 +254,7 @@ std::string MeshManager::load_cylinder_mesh(GLint sector_count, GLfloat radius, 
 
     new_mesh->send_data();
     m_mesh_map.insert({ name, new_mesh });
-    return name;
+    return new_mesh;
 }
 
 std::shared_ptr<Mesh> MeshManager::get_mesh(const std::string& name) {

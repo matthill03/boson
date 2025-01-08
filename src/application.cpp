@@ -30,11 +30,10 @@ void Application::add_cube(const CubeInfo& info) {
 
     if (mesh == nullptr) {
         // Item does not exists
-        std::string new_mesh_name = m_mesh_manager->load_cube_mesh();;
-        std::shared_ptr<Mesh> mesh = m_mesh_manager->get_mesh(new_mesh_name);
+        std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_cube_mesh();;
 
         Object new_obj = Object({info.position, info.size, info.rotation, info.textures, info.shininess});
-        mesh->push_instance({new_obj.get_model(), info.textures});
+        new_mesh->push_instance({new_obj.get_model(), info.textures});
 
         //m_obj_data.insert({new_mesh, { Object({info.position, info.size, info.rotation, info.material}) }});
         return;
@@ -50,9 +49,11 @@ void Application::add_plane(const PlaneInfo& info) {
 
     if (mesh == nullptr) {
         // Item does not exists
-        std::string new_mesh = m_mesh_manager->load_plane_mesh();;
+        std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_plane_mesh();;
 
-        m_obj_data.insert({new_mesh, { Object({info.position, glm::vec3(info.size.x, 1.0f, info.size.y), info.rotation, info.material}) }});
+        Object new_obj = Object({info.position, glm::vec3(info.size.x, 1.0f, info.size.y), info.rotation, info.material});
+        new_mesh->push_instance({new_obj.get_model(), info.textures});
+        //m_obj_data.insert({new_mesh, { Object({info.position, glm::vec3(info.size.x, 1.0f, info.size.y), info.rotation, info.material}) }});
         return;
     }
 
@@ -66,9 +67,11 @@ void Application::add_sphere(const SphereInfo& info) {
 
     if (mesh == nullptr) {
         // Item does not exists
-        std::string new_mesh = m_mesh_manager->load_sphere_mesh(info.sector_count, info.stack_count, info.radius, sphere_name);
+        std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_sphere_mesh(info.sector_count, info.stack_count, info.radius, sphere_name);
 
-        m_obj_data.insert({new_mesh, { Object({info.position, glm::vec3(1.0f), info.rotation, info.material}) }});
+        Object new_obj = Object({info.position, glm::vec3(1.0f), info.rotation, info.material});
+        new_mesh->push_instance({new_obj.get_model(), info.textures});
+        //m_obj_data.insert({new_mesh, { Object({info.position, glm::vec3(1.0f), info.rotation, info.material}) }});
         return;
     }
 
@@ -83,9 +86,11 @@ void Application::add_cylinder(const CylinderInfo& info) {
 
     if (mesh == nullptr) {
         // Item does not exists
-        std::string new_mesh = m_mesh_manager->load_cylinder_mesh(info.sector_count, info.radius, info.height, cylinder_name);
+        std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_cylinder_mesh(info.sector_count, info.radius, info.height, cylinder_name);
 
-        m_obj_data.insert({new_mesh, { Object({info.position, glm::vec3(1.0f), info.rotation, info.material}) }});
+        Object new_obj = Object({info.position, glm::vec3(1.0f), info.rotation, info.material});
+        new_mesh->push_instance({new_obj.get_model(), info.textures});
+        //m_obj_data.insert({new_mesh, { Object({info.position, glm::vec3(1.0f), info.rotation, info.material}) }});
         return;
     }
 
@@ -144,12 +149,12 @@ void Application::run() {
         .file_path = "../resources/latern/Lantern.gltf",
     });
 
-    /*add_plane({*/
-    /*    .position = {1.0f, -10.0f, 0.0f},*/
-    /*    .size = {100.0f, 200.0f},*/
-    /*    .rotation = {0.0f, 0.0f, 0.0f},*/
-    /*    .material = material,*/
-    /*});*/
+    add_plane({
+        .position = {1.0f, 10.0f, 0.0f},
+        .size = {100.0f, 200.0f},
+        .rotation = {0.0f, 0.0f, 0.0f},
+        .textures = textures_two,
+    });
 
     shader.use();
     shader.set_mat4("projection", m_proj_matrix);

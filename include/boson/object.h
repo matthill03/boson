@@ -68,6 +68,7 @@ typedef struct PlaneInfo {
     glm::vec3 position;
     glm::vec2 size;
     glm::vec3 rotation;
+    std::vector<Texture> textures;
     Material material;
 } PlaneInfo;
 
@@ -77,6 +78,7 @@ typedef struct SphereInfo {
     GLint stack_count;
     GLfloat radius;
     glm::vec3 rotation;
+    std::vector<Texture> textures;
     Material material;
 
 
@@ -88,6 +90,7 @@ typedef struct CylinderInfo {
     GLfloat radius;
     GLfloat height;
     glm::vec3 rotation;
+    std::vector<Texture> textures;
     Material material;
 
 
