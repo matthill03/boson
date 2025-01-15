@@ -96,14 +96,14 @@ std::shared_ptr<Mesh> MeshManager::load_model_mesh(const std::string& file_path)
         exit(EXIT_FAILURE);
     }
 
-    std::cout << "INFO >> Loaded model '" << file_path << "' correctly...\n";
+    //std::cout << "INFO >> Loaded model '" << file_path << "' correctly...\n";
 
     aiNode* root_node = scene->mRootNode;
 
     process_node(new_mesh, *scene->mRootNode, *scene, model_root_path, glm::mat4(1.0f));
-    std::cout << "Mesh vertex count: " << new_mesh->get_vertex_count() << "\n";
-    std::cout << "Mesh index count: " << new_mesh->get_index_count() << "\n";
-    std::cout << "Mesh triangle count: " << new_mesh->get_index_count() / 3 << "\n";
+    //std::cout << "Mesh vertex count: " << new_mesh->get_vertex_count() << "\n";
+    //std::cout << "Mesh index count: " << new_mesh->get_index_count() << "\n";
+    //std::cout << "Mesh triangle count: " << new_mesh->get_index_count() / 3 << "\n";
 
     m_mesh_map.insert({ file_path, new_mesh });
     return new_mesh;
@@ -214,13 +214,13 @@ std::shared_ptr<Mesh> MeshManager::load_cylinder_mesh(GLint sector_count, GLfloa
 
             if (j > 0) {
                 if (i == 0) {
-                    new_mesh->push_index(center_index);
-                    new_mesh->push_index(new_mesh->get_vertex_count() - 2);
                     new_mesh->push_index(new_mesh->get_vertex_count() - 1);
+                    new_mesh->push_index(new_mesh->get_vertex_count() - 2);
+                    new_mesh->push_index(center_index);
                 } else {
-                    new_mesh->push_index(center_index);
-                    new_mesh->push_index(new_mesh->get_vertex_count() - 2);
                     new_mesh->push_index(new_mesh->get_vertex_count() - 1);
+                    new_mesh->push_index(new_mesh->get_vertex_count() - 2);
+                    new_mesh->push_index(center_index);
                 }
             }
         }
@@ -241,14 +241,14 @@ std::shared_ptr<Mesh> MeshManager::load_cylinder_mesh(GLint sector_count, GLfloa
             GLuint previous = new_mesh->get_vertex_count() - 3;
 
             // Triangle 1
-            new_mesh->push_index(current);
-            new_mesh->push_index(previous);
             new_mesh->push_index(previous - 1);
+            new_mesh->push_index(previous);
+            new_mesh->push_index(current);
 
             // Triangle 2
-            new_mesh->push_index(current - 1);
-            new_mesh->push_index(current);
             new_mesh->push_index(previous - 1);
+            new_mesh->push_index(current);
+            new_mesh->push_index(current - 1);
         }
     }
 

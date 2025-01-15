@@ -27,6 +27,8 @@ Window::Window(const WindowConfig_t& config) : m_width(config.width), m_height(c
     glfwMakeContextCurrent(m_handle);
     glfwSetFramebufferSizeCallback(m_handle, framebuffer_size_callback);
 
+    glfwSwapInterval(0);
+
     glewExperimental = GL_TRUE;
     glewInit();
 

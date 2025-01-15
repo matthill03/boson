@@ -9,6 +9,7 @@
 #include "boson/renderer.h"
 #include "boson/object.h"
 #include "boson/managers/mesh_manager.h"
+#include "boson/managers/light_manager.h"
 
 namespace boson {
 class Application {
@@ -23,9 +24,13 @@ public:
     void add_sphere(const SphereInfo& info);
     void add_cylinder(const CylinderInfo& info);
 
+    void set_directional_light(const DirectionalLight& light);
+    void add_point_light(const PointLight& light);
+
 private:
     std::unique_ptr<Window> m_window = nullptr;
     std::unique_ptr<MeshManager> m_mesh_manager = std::make_unique<MeshManager>();
+    std::unique_ptr<LightManager> m_light_manager = std::make_unique<LightManager>();
 
     // Object data per vao
     std::unordered_map<std::string, std::vector<Object>> m_obj_data = {};

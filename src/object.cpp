@@ -9,7 +9,7 @@ Object::Object(const ObjectInfoMat& info) : m_material(info.material), m_shinine
     m_model_matrix = glm::rotate(m_model_matrix, glm::radians(info.rotation.y), {0.0f, 1.0f, 0.0f});
     m_model_matrix = glm::rotate(m_model_matrix, glm::radians(info.rotation.z), {0.0f, 0.0f, 1.0f});
 
-    m_model_matrix = glm::translate(m_model_matrix, {-info.position.x / info.size.x, -info.position.y / info.size.y, info.position.z / -info.size.z});
+    m_model_matrix = glm::translate(m_model_matrix, {-info.position.x / info.size.x, info.position.y / info.size.y, info.position.z / -info.size.z});
 
 }
 

@@ -24,7 +24,6 @@ public:
 private:
     std::unique_ptr<Shader> m_shader = nullptr;
 
-    void render_data(const Object& obj, const Mesh& mesh);
     void render_instanced(const Mesh& mesh);
 
 };
