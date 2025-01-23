@@ -25,15 +25,6 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(glfw)
 
-# Fetch GLEW
-FetchContent_Declare(
-    glew
-    GIT_REPOSITORY https://github.com/Perlmint/glew-cmake.git
-    GIT_TAG glew-cmake-2.2.0
-    SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/glew
-)
-FetchContent_MakeAvailable(glew)
-
 # Fetch and configure GLM
 FetchContent_Declare(
     glm
@@ -61,23 +52,23 @@ set(ASSIMP_BUILD_OBJ_IMPORTER ON CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_GLTF_IMPORTER ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(assimp)
 
+add_library(glad STATIC
+    external/glad/src/gl.c
+)
+
+target_include_directories(glad PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include)
+
 # Automatically add all .cpp files in the src directory
 file(GLOB_RECURSE SOURCES src/*.cpp src/*/*.cpp)
 
 # Add the executable for the project
 add_library(${PROJECT_NAME} ${SOURCES})
 
-# Define necessary compile definitions for GLEW
-target_compile_definitions(${PROJECT_NAME} PRIVATE
-    GLEW_STATIC
-    GL_GLEXT_PROTOTYPES
-)
-
 # Link the necessary libraries (OpenGL, glfw, glew, glm, json, assimp)
 target_link_libraries(${PROJECT_NAME} PRIVATE
     glfw
-    libglew_static
     glm::glm
+    glad
     # nlohmann_json::nlohmann_json
 )
 
@@ -89,13 +80,15 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${FETCHCONTENT_BASE_DIR}/glfw/include
     ${FETCHCONTENT_BASE_DIR}/glm
-    # ${FETCHCONTENT_BASE_DIR}/glew/include
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/stb_image/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include
     ${FETCHCONTENT_BASE_DIR}/assimp/include
 )
+message(STATUS "Glad include directory: ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include")
 
 # Optional: Platform-specific frameworks for macOS
 if(APPLE)
