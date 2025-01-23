@@ -135,8 +135,9 @@ void Application::run() {
     Texture house_diffuse("../resources/cottage/Cottage_Clean_Base_Color.png", TextureType::DIFFUSE);
     std::vector<Texture> house_texture = { house_diffuse };
 
-    Texture road_diffuse("../resources/asphalt.png", TextureType::DIFFUSE);
-    std::vector<Texture> road_texture = { road_diffuse };
+    Texture road_diffuse("../resources/cobblestone.png", TextureType::DIFFUSE);
+    Texture road_specular("../resources/cobble_spec.png", TextureType::SPECULAR);
+    std::vector<Texture> road_texture = { road_diffuse, road_specular };
 
     Material box_material = {
         .texture_maps = textures,
@@ -203,7 +204,8 @@ void Application::run() {
         .size = {10.0f, 200.0f},
         .rotation = {0.0f, 0.0f, 0.0f},
         .material = road_material,
-        .tile_count_y = 8.0f
+        .tile_count_x = 4.0f,
+        .tile_count_y = 100.0f,
         //.textures = textures_two,
     });
 
