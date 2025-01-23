@@ -48,7 +48,9 @@ void MeshManager::process_node(const std::shared_ptr<Mesh> mesh, const aiNode& n
             }
         }
 
+
         if (node_mesh->mMaterialIndex >= 0) {
+            GPUMaterial new_mat = {};
             aiMaterial* material = scene.mMaterials[node_mesh->mMaterialIndex];
 
             aiString diffuse_path;
@@ -58,19 +60,24 @@ void MeshManager::process_node(const std::shared_ptr<Mesh> mesh, const aiNode& n
                 material->GetTexture(aiTextureType::aiTextureType_DIFFUSE, 0, &diffuse_path);
 
                 mesh->add_texture(model_root_path.c_str() + std::string(diffuse_path.C_Str()), TextureType::DIFFUSE);
+                new_mat.diffuse_map = mesh->get_textures().size() - 1;
 
+               mesh->set_has_file_textures(true);
             }
 
             if (material->GetTextureCount(aiTextureType::aiTextureType_SPECULAR) > 0) {
                 material->GetTexture(aiTextureType::aiTextureType_SPECULAR, 0, &specular_path);
 
                 mesh->add_texture(model_root_path.c_str() + std::string(specular_path.C_Str()), TextureType::SPECULAR);
+                new_mat.specular_map = mesh->get_textures().size() - 1;
             }
 
             GLfloat shininess;
             if (material->Get(AI_MATKEY_SHININESS_STRENGTH, shininess) == AI_SUCCESS) {
-                mesh->set_shininess(shininess);
+                //mesh->set_shininess(shininess);
+                new_mat.shininess = shininess;
             }
+            mesh->add_material(new_mat);
         }
     }
 
@@ -118,11 +125,18 @@ std::shared_ptr<Mesh> MeshManager::load_cube_mesh() {
     return new_mesh;
 }
 
-std::shared_ptr<Mesh> MeshManager::load_plane_mesh() {
-    std::shared_ptr<Mesh> new_mesh = std::make_shared<Mesh>("plane", plane_vertices, plane_indicies, m_next_mesh_id);
+std::shared_ptr<Mesh> MeshManager::load_plane_mesh(GLfloat tile_count_x, GLfloat tile_count_y, const std::string& plane_name) {
+    std::vector<Vertex> plane_vertices = {
+        {{-0.5f, 0.0f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}}, // Front left
+        {{ 0.5f, 0.0f, -0.5f}, {0.0f, 1.0f, 0.0f}, {tile_count_x, 0.0f}}, // Front right
+        {{ 0.5f, 0.0f,  0.5f}, {0.0f, 1.0f, 0.0f}, {tile_count_x, tile_count_y}}, // Back right
+        {{-0.5f, 0.0f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, tile_count_y}}, // Back left
+    };
+
+    std::shared_ptr<Mesh> new_mesh = std::make_shared<Mesh>(plane_name, plane_vertices, plane_indicies, m_next_mesh_id);
     m_next_mesh_id++;
 
-    m_mesh_map.insert({ "plane", new_mesh});
+    m_mesh_map.insert({ plane_name, new_mesh});
 
     return new_mesh;
 }

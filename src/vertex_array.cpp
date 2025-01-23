@@ -18,13 +18,10 @@ VertexArray::VertexArray(GLuint max_instances) : m_max_instances(max_instances){
         glVertexAttribDivisor(3 + i, 1);
     }
 
-    glVertexAttribIPointer(7, 1, GL_INT, sizeof(InstanceData), (void*)offsetof(InstanceData, diffuse_map));
+    glVertexAttribIPointer(7, 1, GL_INT, sizeof(InstanceData), (void*)offsetof(InstanceData, material_index));
     glEnableVertexAttribArray(7);
     glVertexAttribDivisor(7, 1);
 
-    glVertexAttribIPointer(8, 1, GL_INT, sizeof(InstanceData), (void*)offsetof(InstanceData, specular_map));
-    glEnableVertexAttribArray(8);
-    glVertexAttribDivisor(8, 1);
     unbind();
 }
 

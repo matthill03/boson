@@ -1,7 +1,9 @@
 #include "boson/application.h"
-#include "GLFW/glfw3.h"
+#include "boson/mesh.h"
+#include <string>
 
 namespace boson {
+
 Application::Application(const WindowConfig_t& window_config) {
     m_window = std::make_unique<Window>(window_config);
     m_proj_matrix = glm::perspective(glm::radians(45.0f), (float)window_config.width / (float)window_config.height, 0.1f, 100.0f);
@@ -16,13 +18,19 @@ void Application::add_model(const ModelInfo& info) {
 
     if (mesh == nullptr) {
         std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_model_mesh(info.file_path);
-        Object new_obj = Object({info.position, info.size, info.rotation, info.textures, info.shininess.value_or(new_mesh->get_shininess())});
-        new_mesh->push_instance({new_obj.get_model(), info.textures});
+
+        Object new_obj = Object({info.position, info.size, info.rotation, info.material.value_or(Material())});
+        if (!info.material.has_value() && new_mesh->has_file_textures()) {
+            new_mesh->push_instance_gpu(new_obj.get_model(), 0);
+            return;
+        }
+
+        new_mesh->push_instance({new_obj.get_model(), info.material.value_or(Material())});
 
         return;
     }
-    Object new_obj = Object({info.position, info.size, info.rotation, info.textures, info.shininess.value_or(mesh->get_shininess())});
-    mesh->push_instance({new_obj.get_model(), info.textures});
+    Object new_obj = Object({info.position, info.size, info.rotation, info.material.value_or(Material())});
+    mesh->push_instance({new_obj.get_model(), info.material.value_or(Material())});
 
 }
 
@@ -33,32 +41,33 @@ void Application::add_cube(const CubeInfo& info) {
         // Item does not exists
         std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_cube_mesh();;
 
-        Object new_obj = Object({info.position, info.size, info.rotation, info.textures, info.shininess});
-        new_mesh->push_instance({new_obj.get_model(), info.textures});
+        Object new_obj = Object({info.position, info.size, info.rotation, info.material.value_or(Material())});
+        new_mesh->push_instance({new_obj.get_model(), info.material.value_or(Material())});
 
-        //m_obj_data.insert({new_mesh, { Object({info.position, info.size, info.rotation, info.material}) }});
         return;
     }
 
-    Object new_obj = Object({info.position, info.size, info.rotation, info.textures, info.shininess});
-    mesh->push_instance({new_obj.get_model(), info.textures});
-    //m_obj_data.at("cube").push_back(Object({info.position, info.size, info.rotation, info.material}));
+    Object new_obj = Object({info.position, info.size, info.rotation, info.material.value_or(Material())});
+    mesh->push_instance({new_obj.get_model(), info.material.value_or(Material())});
 }
 
 void Application::add_plane(const PlaneInfo& info) {
-    std::shared_ptr<Mesh> mesh = m_mesh_manager->get_mesh("plane");
+    std::string plane_name = "plane_" + std::to_string(info.tile_count_x.value_or(1.0f)) + "_" + std::to_string(info.tile_count_y.value_or(1.0f));
+
+    std::shared_ptr<Mesh> mesh = m_mesh_manager->get_mesh(plane_name);
 
     if (mesh == nullptr) {
         // Item does not exists
-        std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_plane_mesh();;
+        std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_plane_mesh(info.tile_count_x.value_or(1.0f), info.tile_count_y.value_or(1.0f), plane_name);
 
-        Object new_obj = Object({info.position, glm::vec3(info.size.x, 1.0f, info.size.y), info.rotation, info.material});
-        new_mesh->push_instance({new_obj.get_model(), info.textures});
+        Object new_obj = Object({info.position, glm::vec3(info.size.x, 1.0f, info.size.y), info.rotation, Material()});
+        new_mesh->push_instance({new_obj.get_model(), info.material.value_or(Material())});
         //m_obj_data.insert({new_mesh, { Object({info.position, glm::vec3(info.size.x, 1.0f, info.size.y), info.rotation, info.material}) }});
         return;
     }
 
-    m_obj_data.at("plane").push_back(Object({info.position, glm::vec3(info.size.x, 1.0f, info.size.y), info.rotation, info.material}));
+    Object new_obj = Object({info.position, glm::vec3(info.size.x, 1.0f, info.size.y), info.rotation, Material()});
+    mesh->push_instance({new_obj.get_model(), info.material.value_or(Material())});
 }
 
 void Application::add_sphere(const SphereInfo& info) {
@@ -71,7 +80,7 @@ void Application::add_sphere(const SphereInfo& info) {
         std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_sphere_mesh(info.sector_count, info.stack_count, info.radius, sphere_name);
 
         Object new_obj = Object({info.position, glm::vec3(1.0f), info.rotation, info.material});
-        new_mesh->push_instance({new_obj.get_model(), info.textures});
+        new_mesh->push_instance({new_obj.get_model(), Material()});
         //m_obj_data.insert({new_mesh, { Object({info.position, glm::vec3(1.0f), info.rotation, info.material}) }});
         return;
     }
@@ -90,7 +99,7 @@ void Application::add_cylinder(const CylinderInfo& info) {
         std::shared_ptr<Mesh> new_mesh = m_mesh_manager->load_cylinder_mesh(info.sector_count, info.radius, info.height, cylinder_name);
 
         Object new_obj = Object({info.position, glm::vec3(1.0f), info.rotation, info.material});
-        new_mesh->push_instance({new_obj.get_model(), info.textures});
+        new_mesh->push_instance({new_obj.get_model(), Material()});
         //m_obj_data.insert({new_mesh, { Object({info.position, glm::vec3(1.0f), info.rotation, info.material}) }});
         return;
     }
@@ -118,13 +127,28 @@ void Application::run() {
     Texture diffuse("../resources/diffuse_box.png", TextureType::DIFFUSE);
     Texture specular("../resources/specular_box.png", TextureType::SPECULAR);
     std::vector<Texture> textures = {diffuse, specular};
-    
+
     Texture diffuse_two("../resources/cobblestone.png", TextureType::DIFFUSE);
     Texture specular_two("../resources/cobble_spec.png", TextureType::SPECULAR);
     std::vector<Texture> textures_two = {diffuse_two, specular_two};
 
     Texture house_diffuse("../resources/cottage/Cottage_Clean_Base_Color.png", TextureType::DIFFUSE);
     std::vector<Texture> house_texture = { house_diffuse };
+
+    Texture road_diffuse("../resources/asphalt.png", TextureType::DIFFUSE);
+    std::vector<Texture> road_texture = { road_diffuse };
+
+    Material box_material = {
+        .texture_maps = textures,
+    };
+
+    Material house_material = {
+        .texture_maps = house_texture,
+    };
+
+    Material road_material = {
+        .texture_maps = road_texture,
+    };
 
 
     /*add_sphere({*/
@@ -147,7 +171,7 @@ void Application::run() {
         .position = {4.0f, -0.5f, 5.0f},
         .size = {1.0f, 1.0f, 1.0f},
         .rotation = {0.0f, 45.0f, 0.0f},
-        .textures = textures,
+        .material = box_material,
         .shininess = 32.0f,
     });
 
@@ -155,33 +179,46 @@ void Application::run() {
         .position = {2.0f, -0.25f, 4.5f},
         .size = {1.5f, 1.5f, 1.5f},
         .rotation = {0.0f, -45.0f, 0.0f},
-        .textures = textures,
+        .material = box_material,
         .shininess = 32.0f,
     });
 
-
     add_model({
-        .position = {-8.0f, -1.0f, -6.0f},
+        .position = {6.0f, -1.0f, 3.0f},
         .size = {0.2f, 0.2f, 0.2f},
         .rotation = {0.0f, 180.0f, 0.0f},
-        .shininess = 32.0f,
         .file_path = "../resources/latern/Lantern.gltf",
     });
 
     add_model({
-        .position = {1.0f, -1.0f, -11.0f},
+        .position = {1.0f, -1.0f, 16.0f},
         .size = {2.0f, 2.0f, 2.0f},
         .rotation = {0.0f, 0.0f, 0.0f},
-        .textures = house_texture,
-        .shininess = 32.0f,
+        .material = house_material,
         .file_path = "../resources/cottage/cottage.obj",
     });
 
     add_plane({
         .position = {0.0f, -1.0f, 0.0f},
-        .size = {200.0f, 200.0f},
+        .size = {10.0f, 200.0f},
         .rotation = {0.0f, 0.0f, 0.0f},
-        .textures = textures_two,
+        .material = road_material,
+        .tile_count_y = 8.0f
+        //.textures = textures_two,
+    });
+
+    add_plane({
+        .position = {-10.0f, -1.0f, 0.0f},
+        .size = {10.0f, 200.0f},
+        .rotation = {0.0f, 0.0f, 0.0f},
+        //.textures = textures_two,
+    });
+
+    add_plane({
+        .position = {10.0f, -1.0f, 0.0f},
+        .size = {10.0f, 200.0f},
+        .rotation = {0.0f, 0.0f, 0.0f},
+        //.textures = textures_two,
     });
 
     set_directional_light({
@@ -192,10 +229,10 @@ void Application::run() {
     });
 
     add_point_light({
-        .position = {0.0f, 1.0f, 6.0f},
+        .position = {0.0f, 2.0f, 3.0f},
         .constant = 1.0f,
         .linear = 0.02f,
-        .quadratic = 0.05f,
+        .quadratic = 0.09f,
         .ambient = { 0.4f, 0.4f, 0.4f },
         .diffuse = { 0.7f, 0.7f, 0.7f },
         .specular = { 1.0f, 1.0f, 1.0f },
@@ -245,7 +282,7 @@ void Application::run() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (const auto& mesh : m_mesh_manager->get_meshes()) {
-            renderer.draw(*mesh.second, {});
+            renderer.draw(*mesh.second);
         }
 
 

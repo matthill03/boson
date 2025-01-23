@@ -1,5 +1,5 @@
 #pragma once
-#include <GL/glew.h>
+#include <glad/gl.h>
 #include <glm/glm.hpp>
 #include <vector>
 
@@ -15,8 +15,7 @@ typedef struct Vertex {
 
 typedef struct InstanceData {
     glm::mat4 transform;
-    GLint diffuse_map;
-    GLint specular_map;
+    GLint material_index;
 } InstanceData;
 
 class VertexArray {

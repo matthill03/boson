@@ -27,13 +27,4 @@ Object::~Object() {
 
 }
 
-void Object::add_texture(const std::string& file_path, TextureType type) {
-    Texture new_texture = Texture(file_path, type);
-    m_textures.push_back(new_texture);
-}
-
-void Object::add_texture(const Texture& texture) {
-    m_textures.push_back(texture);
-}
-
 }

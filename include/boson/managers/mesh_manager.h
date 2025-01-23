@@ -1,5 +1,5 @@
 #pragma once
-#include <GL/glew.h>
+#include <glad/gl.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -27,7 +27,7 @@ public:
     ~MeshManager();
 
     std::shared_ptr<Mesh> load_cube_mesh();
-    std::shared_ptr<Mesh> load_plane_mesh();
+    std::shared_ptr<Mesh> load_plane_mesh(GLfloat tile_count_x, GLfloat tile_count_y, const std::string& plane_name);
     std::shared_ptr<Mesh> load_sphere_mesh(GLint sector_count, GLint stack_count, GLfloat radius, const std::string& name);
     std::shared_ptr<Mesh> load_cylinder_mesh(GLint sector_count, GLfloat radius, GLfloat height, const std::string& name);
     std::shared_ptr<Mesh> load_model_mesh(const std::string& file_path);
@@ -44,13 +44,6 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Mesh>> m_mesh_map = {};
 
     GLuint m_next_mesh_id = 0;
-
-    std::vector<Vertex> plane_vertices = {
-        {{-0.5f, 0.0f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}}, // Front left
-        {{ 0.5f, 0.0f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}}, // Front right
-        {{ 0.5f, 0.0f,  0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}}, // Back right
-        {{-0.5f, 0.0f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}}, // Back left
-    };
 
     std::vector<GLuint> plane_indicies = {
         0, 3, 2,

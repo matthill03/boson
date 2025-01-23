@@ -29,8 +29,12 @@ Window::Window(const WindowConfig_t& config) : m_width(config.width), m_height(c
 
     glfwSwapInterval(0);
 
-    glewExperimental = GL_TRUE;
-    glewInit();
+
+    int version = gladLoadGL(glfwGetProcAddress);
+    if (version == 0) {
+        std::cout << "Failed to load GLAD!\n";
+        exit(1);
+    }
 
 }
 

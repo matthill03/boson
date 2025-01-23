@@ -1,5 +1,5 @@
 #pragma once
-#include "GL/glew.h"
+#include <glad/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "boson/mesh.h"
-#include "boson/object.h"
 #include "boson/shader.h"
 #include "boson/texture.h"
 
@@ -19,7 +18,7 @@ public:
     Renderer(const Shader& shader);
     ~Renderer();
 
-    void draw(const Mesh& mesh, const std::vector<Object>& obj_list);
+    void draw(const Mesh& mesh);
 
 private:
     std::unique_ptr<Shader> m_shader = nullptr;

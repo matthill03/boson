@@ -1,5 +1,5 @@
 #pragma once
-#include <GL/glew.h>
+#include <glad/gl.h>
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
@@ -7,22 +7,9 @@
 #include <optional>
 
 #include "boson/texture.h"
+#include "boson/mesh.h"
 
 namespace boson {
-
-typedef struct {
-    std::string diffuse;
-    std::string specular;
-    GLfloat shininess;
-
-} Material;
-
-typedef struct InstanceMaterial{
-    GLint diffuse;
-    GLint specular;
-    GLfloat shininess;
-
-} InstanceMaterial;
 
 enum class ObjectType {
     CUBE,
@@ -51,8 +38,7 @@ typedef struct ModelInfo {
     glm::vec3 position;
     glm::vec3 size;
     glm::vec3 rotation;
-    std::vector<Texture> textures;
-    std::optional<GLfloat> shininess;
+    std::optional<Material> material;
     std::string file_path;
 } ModelInfo;
 
@@ -60,7 +46,8 @@ typedef struct CubeInfo {
     glm::vec3 position;
     glm::vec3 size;
     glm::vec3 rotation;
-    std::vector<Texture> textures;
+    std::optional<Material> material;
+    //std::vector<Texture> textures;
     GLfloat shininess;
 } CubeInfo;
 
@@ -68,8 +55,10 @@ typedef struct PlaneInfo {
     glm::vec3 position;
     glm::vec2 size;
     glm::vec3 rotation;
-    std::vector<Texture> textures;
-    Material material;
+    std::optional<Material> material;
+    std::optional<GLfloat> tile_count_x;
+    std::optional<GLfloat> tile_count_y;
+    //std::vector<Texture> textures;
 } PlaneInfo;
 
 typedef struct SphereInfo {
@@ -109,12 +98,10 @@ public:
 
     std::vector<Texture> get_textures() const { return m_textures; }
 
-    void add_texture(const std::string& file_path, TextureType type);
-    void add_texture(const Texture& texture);
-
 private:
     glm::mat4 m_model_matrix = glm::mat4(1.0f);
     GLfloat m_shininess = 1.0f;
+
     Material m_material = {};
     std::vector<Texture> m_textures = {};
 };
