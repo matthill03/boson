@@ -7,6 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # set(CMAKE_CXX_FLAGS_DEBUG "-g")
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/)
+
 # Include FetchContent to manage external dependencies
 include(FetchContent)
 
@@ -76,17 +80,13 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     assimp
 )
 
-# Add include directories for the project and the fetched libraries
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${FETCHCONTENT_BASE_DIR}/glfw/include
-    ${FETCHCONTENT_BASE_DIR}/glm
-)
-
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/stb_image/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include
     ${FETCHCONTENT_BASE_DIR}/assimp/include
+    ${FETCHCONTENT_BASE_DIR}/glfw/include
+    ${FETCHCONTENT_BASE_DIR}/glm-src
 )
 message(STATUS "Glad include directory: ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include")
 
