@@ -107,7 +107,7 @@ std::shared_ptr<Mesh> MeshManager::load_model_mesh(const std::string& file_path)
 
     aiNode* root_node = scene->mRootNode;
 
-    process_node(new_mesh, *scene->mRootNode, *scene, model_root_path, glm::mat4(1.0f));
+    process_node(new_mesh, *scene->mRootNode, *scene, model_root_path.string(), glm::mat4(1.0f));
     //std::cout << "Mesh vertex count: " << new_mesh->get_vertex_count() << "\n";
     //std::cout << "Mesh index count: " << new_mesh->get_index_count() << "\n";
     //std::cout << "Mesh triangle count: " << new_mesh->get_index_count() / 3 << "\n";
