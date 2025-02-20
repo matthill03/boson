@@ -37,7 +37,6 @@ Skybox::Skybox(const std::vector<std::string>& map_textures) {
 }
 
 void Skybox::draw(const glm::mat4& view, const glm::mat4& projection) const {
-
     glDepthFunc(GL_LEQUAL);
     m_shader->use();
     m_shader->set_int("skybox", 0);

@@ -56,6 +56,15 @@ set(ASSIMP_BUILD_OBJ_IMPORTER ON CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_GLTF_IMPORTER ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(assimp)
 
+# Fetch JSON
+FetchContent_Declare(
+    json 
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.3
+    SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/json
+)
+FetchContent_MakeAvailable(json)
+
 add_library(glad STATIC
     external/glad/src/gl.c
 )
@@ -73,7 +82,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     glfw
     glm::glm
     glad
-    # nlohmann_json::nlohmann_json
+    nlohmann_json::nlohmann_json
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC

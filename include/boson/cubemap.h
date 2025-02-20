@@ -9,6 +9,9 @@
 #include "boson/application.h"
 #include "boson/renderer.h"
 
+#define SKYBOX_VERTEX_SHADER "../lib/boson/resources/shaders/skybox_vertex.glsl"
+#define SKYBOX_FRAGMENT_SHADER "../lib/boson/resources/shaders/skybox_fragment.glsl"
+
 namespace boson {
 
 class Skybox {
@@ -23,7 +26,7 @@ private:
     GLuint m_vao;
     GLuint m_vbo;
 
-    std::unique_ptr<Shader> m_shader = std::make_unique<Shader>("../shaders/skybox_vertex.glsl", "../shaders/skybox_fragment.glsl");
+    std::unique_ptr<Shader> m_shader = std::make_unique<Shader>(SKYBOX_VERTEX_SHADER, SKYBOX_FRAGMENT_SHADER);
 
     void bind_texture() const { glBindTexture(GL_TEXTURE_CUBE_MAP, m_id); }
     void unbind_texture() const { glBindTexture(GL_TEXTURE_CUBE_MAP, 0); }

@@ -6,11 +6,7 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
-    std::cout << "ERROR";
-}
-
-Window::Window(const WindowConfig_t& config) : m_width(config.width), m_height(config.height), m_title(config.title) {
+Window::Window(const WindowConfig_t& config) : m_width(config.width), m_height(config.height), m_title(config.title), m_colour(config.colour) {
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
