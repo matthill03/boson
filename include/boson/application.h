@@ -9,7 +9,6 @@
 #include "boson/shader.h"
 #include "boson/renderer.h"
 #include "boson/mesh.h"
-#include "boson/object.h"
 #include "boson/cubemap.h"
 #include "boson/managers/mesh_manager.h"
 #include "boson/managers/light_manager.h"
