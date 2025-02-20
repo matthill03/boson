@@ -14,6 +14,7 @@ Shader::Shader(const std::string& vertex_file_path, const std::string& fragment_
     const char* vertex_code = vertex_source_content.c_str();
     const char* fragment_code = fragment_source_content.c_str();
 
+
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertex_code, NULL);
     glCompileShader(vertexShader);

@@ -238,17 +238,6 @@ void Application::run() {
         .specular = { 1.0f, 1.0f, 1.0f },
     });
 
-    std::vector<std::string> faces = {
-        "../resources/skybox/right.jpg",
-        "../resources/skybox/left.jpg",
-        "../resources/skybox/top.jpg",
-        "../resources/skybox/bottom.jpg",
-        "../resources/skybox/back.jpg",
-        "../resources/skybox/front.jpg"
-    };
-
-    Skybox skybox = Skybox(faces);
-
     shader.use();
     shader.set_mat4("projection", m_proj_matrix);
     shader.set_mat4("view", m_view_matrix);
@@ -277,10 +266,16 @@ void Application::run() {
     double previous_time = glfwGetTime();
     int frame_count = 0;
 
-    GLenum err;
-    while ((err = glGetError()) != GL_NO_ERROR) {
-        std::cout << "OpenGL Error: " << err << std::endl;
-    }
+    std::vector<std::string> faces = {
+        "../resources/skybox/right.jpg",
+        "../resources/skybox/left.jpg",
+        "../resources/skybox/top.jpg",
+        "../resources/skybox/bottom.jpg",
+        "../resources/skybox/back.jpg",
+        "../resources/skybox/front.jpg"
+    };
+
+    Skybox skybox = Skybox(faces);
 
     while (!glfwWindowShouldClose(m_window->get_handle()))
     {
@@ -299,10 +294,10 @@ void Application::run() {
 
         skybox.draw(m_view_matrix, m_proj_matrix);
 
-        /*shader.use();*/
-        /*for (const auto& mesh : m_mesh_manager->get_meshes()) {*/
-        /*    renderer.draw(*mesh.second);*/
-        /*}*/
+        shader.use();
+        for (const auto& mesh : m_mesh_manager->get_meshes()) {
+            renderer.draw(*mesh.second);
+        }
 
         glfwSwapBuffers(m_window->get_handle());
         glfwPollEvents();

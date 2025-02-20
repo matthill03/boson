@@ -1,5 +1,6 @@
 #include "boson/cubemap.h"
 #include "boson/application.h"
+#include "boson/renderer.h"
 
 namespace boson {
 
@@ -33,14 +34,13 @@ Skybox::Skybox(const std::vector<std::string>& map_textures) {
 
     create_vao();
 
-    m_shader->use();
-    m_shader->set_int("skybox", 0);
 }
 
 void Skybox::draw(const glm::mat4& view, const glm::mat4& projection) const {
+
     glDepthFunc(GL_LEQUAL);
     m_shader->use();
-
+    m_shader->set_int("skybox", 0);
 
     glm::mat4 view_for_shader = glm::mat4(glm::mat3(view));
     m_shader->set_mat4("view", view_for_shader);
@@ -59,14 +59,15 @@ void Skybox::draw(const glm::mat4& view, const glm::mat4& projection) const {
 
 void Skybox::create_vao() {
     glGenVertexArrays(1, &m_vao);
+
     glGenBuffers(1, &m_vbo);
 
     bind_vao();
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(GLfloat), m_vertices.data(), GL_STATIC_DRAW);
 
-    glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
+    glEnableVertexAttribArray(0);
     unbind_vao();
 }
 

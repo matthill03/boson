@@ -6,6 +6,8 @@
 #include <string>
 
 #include "boson/shader.h"
+#include "boson/application.h"
+#include "boson/renderer.h"
 
 namespace boson {
 
