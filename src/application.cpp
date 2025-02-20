@@ -1,12 +1,10 @@
 #include "boson/application.h"
-#include "boson/mesh.h"
-#include <string>
 
 namespace boson {
 
 Application::Application(const WindowConfig_t& window_config) {
     m_window = std::make_unique<Window>(window_config);
-    m_proj_matrix = glm::perspective(glm::radians(45.0f), (float)window_config.width / (float)window_config.height, 0.1f, 100.0f);
+    m_proj_matrix = glm::perspective(glm::radians(45.0f), (float)window_config.width / (float)window_config.height, 0.1f, 1000.0f);
     m_view_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, -20.0f));
 }
 
@@ -23,8 +21,8 @@ void Application::add_point_light(const PointLight& light) {
 
 void Application::run() {
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    /*glEnable(GL_CULL_FACE);*/
+    /*glCullFace(GL_BACK);*/
 
     Shader shader = Shader("../shaders/vertex.glsl", "../shaders/fragment.glsl");
 
@@ -126,9 +124,9 @@ void Application::run() {
 
     set_directional_light({
         .direction = {-0.0f, -10.0f, -8.0f},
-        .ambient = {0.0f, 0.0f, 0.0f},
-        .diffuse = {0.2f, 0.2f, 0.2f},
-        .specular = {0.1f, 0.1f, 0.1f},
+        .ambient = {0.2f, 0.2f, 0.2f},
+        .diffuse = {0.8f, 0.8f, 0.8f},
+        .specular = {0.3f, 0.3f, 0.8f},
     });
 
     add_point_light({
@@ -169,8 +167,22 @@ void Application::run() {
     double previous_time = glfwGetTime();
     int frame_count = 0;
 
+    std::vector<std::string> faces = {
+        "../resources/skybox/right.jpg",
+        "../resources/skybox/left.jpg",
+        "../resources/skybox/top.jpg",
+        "../resources/skybox/bottom.jpg",
+        "../resources/skybox/back.jpg",
+        "../resources/skybox/front.jpg"
+    };
+
+    Skybox skybox = Skybox(faces);
+
     while (!glfwWindowShouldClose(m_window->get_handle()))
     {
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         double current_time = glfwGetTime();
         frame_count++;
 
@@ -181,13 +193,12 @@ void Application::run() {
             previous_time = current_time;
         }
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        skybox.draw(m_view_matrix, m_proj_matrix);
 
+        shader.use();
         for (const auto& mesh : m_mesh_manager->get_meshes()) {
             renderer.draw(*mesh.second);
         }
-
 
         glfwSwapBuffers(m_window->get_handle());
         glfwPollEvents();
