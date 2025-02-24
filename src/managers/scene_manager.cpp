@@ -1,5 +1,4 @@
-#include "scene_manager.h"
-
+#include "boson/managers/scene_manager.h"
 
 namespace boson {
 
