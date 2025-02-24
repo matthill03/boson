@@ -168,7 +168,7 @@ void Application::run() {
     double previous_time = glfwGetTime();
     int frame_count = 0;
 
-    std::vector<std::string> faces = {
+    std::vector<std::string> faces_day = {
         "../resources/skybox/right.jpg",
         "../resources/skybox/left.jpg",
         "../resources/skybox/top.jpg",
@@ -177,7 +177,16 @@ void Application::run() {
         "../resources/skybox/back.jpg"
     };
 
-    Skybox skybox = Skybox(faces);
+    std::vector<std::string> faces_night = {
+        "../resources/skybox_night/right.jpg",
+        "../resources/skybox_night/left.jpg",
+        "../resources/skybox_night/top.jpg",
+        "../resources/skybox_night/bottom.jpg",
+        "../resources/skybox_night/back.jpg",
+        "../resources/skybox_night/front.jpg"
+    };
+
+    Skybox skybox = Skybox(faces_day);
 
     while (!glfwWindowShouldClose(m_window->get_handle()))
     {
