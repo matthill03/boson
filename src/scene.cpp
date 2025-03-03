@@ -26,10 +26,10 @@ void Scene::load_scene(const std::string& file_path) {
 				// WindowConfig -> { width: 1280, height: 720, title: "Hello World", background colour: {1.0f, 0.0f, 0.0f} }
 
 				WindowConfig window_config = {
-					(GLint)data["width"],
-					(GLint)data["height"],
-					std::string(data["title"]),
-					{(GLfloat)data["background_colour"]["r"], (GLfloat)data["background_colour"]["g"], (GLfloat)data["background_colour"]["b"]}
+					data["width"],
+					data["height"],
+					data["title"],
+					{data["background_colour"]["r"], data["background_colour"]["g"], data["background_colour"]["b"]}
 				};
 
 				if (m_window == nullptr) {
@@ -46,21 +46,21 @@ void Scene::load_scene(const std::string& file_path) {
 				//m_view_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, -20.0f));
 
 				m_view_matrix = glm::lookAt(
-					glm::vec3((GLfloat)data["position"]["x"], (GLfloat)data["position"]["y"], (GLfloat)data["position"]["z"]),
-					glm::vec3((GLfloat)data["focus_point"]["x"], (GLfloat)data["focus_point"]["y"], (GLfloat)data["focus_point"]["z"]),
+					glm::vec3(data["position"]["x"], data["position"]["y"], data["position"]["z"]),
+					glm::vec3(data["focus_point"]["x"], data["focus_point"]["y"], data["focus_point"]["z"]),
 					glm::vec3(0.0f, 1.0f, 0.0f)
 				);
 
 				m_shader->use();
 				m_shader->set_mat4("projection", m_proj_matrix);
 				m_shader->set_mat4("view", m_view_matrix);
-				m_shader->set_vec3("view_pos", { (GLfloat)data["position"]["x"], (GLfloat)data["position"]["y"], (GLfloat)data["position"]["z"] });
+				m_shader->set_vec3("view_pos", { data["position"]["x"], data["position"]["y"], data["position"]["z"] });
 			}
 			else if (data["type"] == "shader") {
 				std::cout << "found shader\n";
 
 				if (m_shader == nullptr) {
-					m_shader = std::make_shared<Shader>(std::string(data["vertex_shader"]), std::string(data["fragment_shader"]));
+					m_shader = std::make_shared<Shader>(data["vertex_shader"], data["fragment_shader"]);
 					m_renderer = std::make_shared<Renderer>(*m_shader);
 				}
 				else {
@@ -90,7 +90,7 @@ void Scene::load_scene(const std::string& file_path) {
 					continue;
 				}
 
-				m_textures.insert({data["name"], std::make_shared<Texture>(std::string(data["file_path"]), type)});
+				m_textures.insert({data["name"], std::make_shared<Texture>(data["file_path"], type)});
 			}
 			else if (data["type"] == "texture_set") {
 				std::cout << "found texture_set\n";
@@ -132,7 +132,7 @@ void Scene::load_scene(const std::string& file_path) {
 					std::shared_ptr<Material> new_material = std::make_shared<Material>();
 					new_material->texture_maps = item->second;
 
-					m_materials.insert({ std::string(data["name"]), new_material });
+					m_materials.insert({ data["name"], new_material });
 				}
 				else {
 					std::shared_ptr<Material> new_material = std::make_shared<Material>();
@@ -154,7 +154,7 @@ void Scene::load_scene(const std::string& file_path) {
 						data["specular"]["b"],
 					};
 
-					m_materials.insert({ std::string(data["name"]), new_material });
+					m_materials.insert({ data["name"], new_material });
 				}
 
 			}
