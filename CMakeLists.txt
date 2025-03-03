@@ -82,11 +82,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     glfw
     glm::glm
     glad
-    nlohmann_json::nlohmann_json
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
     assimp
+    nlohmann_json::nlohmann_json
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
