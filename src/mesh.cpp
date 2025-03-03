@@ -77,14 +77,14 @@ void Mesh::process_instance_material(const InstanceInfo& info) {
     GLint specular_map_index = -1;
 
     for (const auto& texture : info.material.texture_maps) {
-        switch (texture.get_type()) {
+        switch (texture->get_type()) {
             case TextureType::DIFFUSE: {
-                m_textures.emplace_back(texture);
+                m_textures.emplace_back(*texture);
                 diffuse_map_index = m_textures.size() - 1;
                 break;
             }
             case TextureType::SPECULAR: {
-                m_textures.emplace_back(texture);
+                m_textures.emplace_back(*texture);
                 specular_map_index = m_textures.size() - 1;
                 break;
             }

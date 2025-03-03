@@ -14,7 +14,7 @@ typedef struct Material{
     glm::vec3 diffuse = {0.6f, 0.6f, 0.6f};
     glm::vec3 specular = {0.2f, 0.2f, 0.2f};
 
-    std::vector<Texture> texture_maps = {};
+    std::vector<std::shared_ptr<Texture>> texture_maps = {};
     GLfloat shininess = 1.0f;
 } Material;
 
