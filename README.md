@@ -148,7 +148,7 @@ Texture types:
 - diffuse
 - specular
 
-- Example Parameters:
+Example Parameters:
 - type: "texture"
 - name: "texture_one"
 - file_path: "<path_to_texture>"
