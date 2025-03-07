@@ -294,5 +294,46 @@ Example Parameters:
 - faces: \["../resources/skybox/right.jpg", "../resources/skybox/left.jpg", "../resources/skybox/top.jpg", "../resources/skybox/bottom.jpg", "../resources/skybox/front.jpg", "../resources/skybox/back.jpg"\]
 
 ## Features
+There are a few key features that have been given to this project, some are graphics/rendering focused but others are for scene description.
+
+- Instanced/Batch rendering
+    - This has been implemented for all objects within the scene.
+    - This gives a greated possibility for having more objects being rendered at the same time.
+    - Also provides easier additions in the future like the grid object mentioned bellow.
+- Materials/textures treated like variables
+    - This gives reusable objects within the JSONL file.
+    - Makes the JSONL file more readable and transferable.
+- Use of texture sets
+    - This gives the ability to reuse textures for different materials.
+    - More verbose about which textures are used for which materials.
+- GLTF/OBJ model loading
+    - Objects can be loaded from common model files.
+    - Textures can be defined in these files, but also can be manual specified in the JSONL file.
+    - Models are batch rendered, meaning **one** VAO is used per model.
+        - This may have to be re-thought when creating dynamic objects and using a scene graph.
+- Cross-Platform Library
 
 ## Future Improvements
+There are a few future improvements that are thought about already. As this is a dissertation project, not all possible features will have been added.
+
+- Extra JSONL Objects
+    - More JSONL objects for shapes and possible 'formatting' of objects in the scene such as a grid object.
+    - This would give a few more possibilites on how the scene can be created and possible the concise nature of the JSONL file.
+- Dynamic Scene
+    - There is planned for the user to be able to interact with the objects they define in the scene.
+    - This is so movement, logic and other features can be created by the user.
+- User Created Shaders
+    - If the user would like to use this as a shader playground. Giving them the ability to define and create their own shaders would be useful.
+    - This would involve having a system to know wich objects use which shader and maybe moving away from there being a scene wide shader.
+    - Give the user the ability to define uniforms or other shader input in the JSONL file.
+- Optimisation in Rendering
+    - Model loading and other optimisations need to be looked into.
+    - This is less needed as there are other features that could be added before this being needed.
+- Multiple Scenes in an Application
+    - If this was to be used as a game framework/engine, needing multiple scenes within the application is important.
+    - Would need to evolve multiple systems like textures and materials so these could be used across scenes.
+    - Maybe some sort of 'include' system for the JSONL files where you can include another material and texture file for use.
+- Use Vulkan in place of OpenGL
+    - Due to this being a dissertation project OpenGL allowed for speed of development.
+    - The 'simpler' understanding of OpenGL meant more features could be added.
+    - Updating to vulkan would mean more modern rendering features and techniques
