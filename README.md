@@ -9,6 +9,23 @@ Welcome to boson!! A library for using JSON Lines to describe 3D scenes in OpenG
         - [MacOS](#MacOS)
     - [Library](#library)
 - [Guide](#guide)
+    - [Object Type](#object-types)
+        - [Window](#window)
+        - [Shader](#shader)
+        - [Camera](#camera)
+        - [Texture](#texture)
+        - [Texture Set](#texture-set)
+        - [Materail](#material)
+        - [Shapes](#shapes)
+            - [Cube](#cube)
+            - [Model](#model)
+            - [Plane](#plane)
+            - [Sphere](#sphere)
+            - [Cylinder](#cylinder)
+        - [Light](#light)
+            - [Directional](#directional)
+            - [Point](#point)
+        - [Skybox](#skybox)
 - [Features](#features)
 - [Future Improvements](#future-improvements)
 
@@ -103,7 +120,8 @@ int main() {
 ## Guide
 ### Object Types
 #### Window
-```json
+The window object should be the **first** object listed in the JSONL file. This is where the scene will be displayed. The width and height of the window will affect the aspect ratio of the camera.
+```
 {"type": "window", "width": int, "height": int, "title": string, "background_colour": {"r": float, "g": float, "b": float}}
 ```
 Example Parameters:
@@ -114,7 +132,8 @@ Example Parameters:
 - background_colour: {"r": 0.5, "g": 0.8, "b": 0.3}
 
 #### Shader
-```json
+The shader given is the shader used for rendering. There is **no** way of using a shader per object. The fragment shader and vertex shader given are the file paths to each of the shaders for the program.
+```
 {"type": "shader", "vertex_shader": string, "fragment_shader": string}
 ```
 Example Parameters:
@@ -131,7 +150,8 @@ Vertex Shader:
 ```glsl
 ```
 #### Camera
-```json
+This is the view port of the scene, this has to be defined **after** the shader of the program as the parameters are passed into the shader upon creation. The position is the position of the camera in world space and the focus point is where the camera is looking.
+```
 {"type": "camera", "position": {"x": float, "y": float, "z": float}, "focus_point": {"x": float, "y": float, "z": float}, "fov": int }
 ```
 Example Parameters:
@@ -141,7 +161,8 @@ Example Parameters:
 - fov: 45
 
 #### Texture
-```json
+Textures are used to load images into the program and use them as texture maps for materials. These cannot be directly added onto shapes or objects but can be used in textures sets. Each texture has a type, this is the type of lighting this texture is to be used for mapping.
+```
 {"type": "texture", "name": string, "file_path": string, "texture_type": string}
 ```
 Texture types:
@@ -155,7 +176,8 @@ Example Parameters:
 - texture_type: "diffuse"
 
 #### Texture Set
-```json
+Texture sets are a collection of textures used in materials. You can add as many textures to a texture set as you like, however, the last texture of each type is the one used in the scene. This will be improved on in the future.
+```
 {"type": "texture_set", "name": string, "textures": string[]}
 ```
 Example Parameters:
@@ -164,7 +186,8 @@ Example Parameters:
 - textures: \["texture_one", "texture_two"\]
 
 #### Material
-```json
+Materials can be applied to any shape/object in the scene. There are two 'types' of material. A colour material, or a textured material. Within the definition of the material you can define all aspects of the material, however, if textures are defined this will override the colour that may have been defined also.
+```
 {"type": "material", "name": string, "ambient": {"r": float, "g": float, "b": float}, "diffuse": {"r": float, "g": float, "b": float}, "specular": {"r": float, "g": float, "b": float}, "shininess": float}
 {"type": "material", "name": string, "textures": string, "shininess": float}
 ```
@@ -186,7 +209,8 @@ Example Parameters (Texture Material):
 
 #### Shapes
 ##### Cube
-```json
+These are the basic cube shape, you can specifiy all properties of the cube within the JSONL file. If the material is not given, a default material will be used by the library.
+```
 {"type": "cube", "name": string, "position": {"x": float, "y": float, "z": float}, "size": {"x": float, "y": float, "z": float}, "rotation": {"x": float, "y": float, "z": float}, "material": string}
 ```
 Example Parameters:
@@ -198,7 +222,8 @@ Example Parameters:
 - material: "colour_example"
 
 ##### Model
-```json
+You can load any OBJ or GLTF model into the program. Textures may be loaded from the model file or can be defined manually by the user. In the example scene there is an example of both of these cases. When defining two objects of the same file path, please make sure to use the exact same file path in the definition.
+```
 {"type": "model", "name": string, "position": {"x": float, "y": float, "z": float}, "size": {"x": float, "y": float, "z": float}, "rotation": {"x": float, "y": float, "z": float}, "file_path": string}
 ```
 Example Parameters:
@@ -210,7 +235,8 @@ Example Parameters:
 - file_path: "../resources/lateran/Lantern.gltf"
 
 ##### Plane
-```json
+This is a simple 2D plane that can be defined, you are able to define all attributes for this in the JSONL file. Planes have the ability to tile the textures given in the material, the number given in the tile count is how many times the texture will repeat on the given axis.
+```
 {"type": "plane", "name": string, "position": {"x": float, "y": float, "z": float}, "size": {"x": float, "y": float}, "rotation": {"x": float, "y": float, "z": float}, "tile_count": {"x": float, "y": float}, "material": string}
 ```
 Example Parameters:
@@ -223,12 +249,15 @@ Example Parameters:
 - material: "default"
 
 ##### Sphere
+**NOT ADDED TO JSONL YET**
 
 ##### Cylinder
+**NOT ADDED TO JSONL YET**
 
 #### Light
 ##### directional
-```json
+The directional lights are used for more ambient lighting for the scene, they simulate more of what the sun would do. All of the options shown bellow are required for the definition.
+```
 {"type": "light", "light_kind": "directional", "direction": {"x": float, "y": float, "z": float}, "ambient": {"r": float, "g": float, "b": float}, "diffuse": {"r": float, "g": float, "b": float}, "specular": {"r": float, "g": float, "b": float}}
 ```
 Example Parameters:
@@ -240,7 +269,8 @@ Example Parameters:
 - specular: {"r": 0.3, "g": 0.3, "b": 0.3}
 
 ##### point
-```json
+Point lights are normally used for more close up lighting, they simulate more of what a light bulb would look like. The linear, quadratic and constant values affect the attenuation of the light and the drop off in lighting from the source.
+```
 {"type": "light", "light_kind": "point", "position": {"x": float, "y": float, "z": float}, "constant": float, "linear": float, "quadratic": float, "ambient": {"r": float, "g": float, "b": float}, "diffuse": {"r": float, "g": float, "b": float}, "specular": {"r": float, "g": float, "b": float}}
 ```
 Example Parameters:
@@ -255,7 +285,8 @@ Example Parameters:
 - specular: {"r": 0.3, "g": 0.3, "b": 0.3}
 
 #### Skybox
-```json
+The skybox is used for the 'background' of the scene. The faces described for the cubemap are required to be in a specific order. That order is: right, left, top, bottom, front, and back.
+```
 {"type": "skybox", "faces": string[6]}
 ```
 Example Parameters:
