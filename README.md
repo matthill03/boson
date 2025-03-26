@@ -15,7 +15,7 @@ Welcome to boson!! A library for using JSON Lines to describe 3D scenes in OpenG
         - [Camera](#camera)
         - [Texture](#texture)
         - [Texture Set](#texture-set)
-        - [Materail](#material)
+        - [Material](#material)
         - [Shapes](#shapes)
             - [Cube](#cube)
             - [Model](#model)
@@ -34,13 +34,14 @@ Welcome to boson!! A library for using JSON Lines to describe 3D scenes in OpenG
 The presets described are listed in the ```CMakePresets.json``` file.
 
 #### Windows
-Clone the example project.
+Clone the example project and initialise the submodle.
 ```bash
 git clone https://github.com/matthill03/boson-test.git
+cd boson-test
+git submodule update --init --recursive
 ```
 Open this new folder in VS Code.
 ```bash
-cd boson-test
 code .
 ```
 Make sure that the CMake Tools extension is installed on VS Code.
