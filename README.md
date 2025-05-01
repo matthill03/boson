@@ -50,7 +50,9 @@ This will then automatically detect the CMake project and ask you which preset y
 If this does NOT happen, open the command prompt and select ```CMake: Select Configure Preset```, then select ```windows```.
 
 On the left hand side is the CMake Tools icon, select this. Then under ```Project Outline```, select ```Configure All Projects```.
-Then ```Build All Projects```. Finally run the new executable ```test.exe```
+Then ```Build All Projects```. 
+
+Finally run the new executable ```test.exe```. By opening up a terminal and navigating to the ```build``` directory. Once there, run ```test.exe``` in the terminal.
 
 #### Linux
 Clone the example project.
